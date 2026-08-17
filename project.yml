@@ -1,0 +1,31 @@
+name: CleanMyMac
+options:
+  bundleIdPrefix: net.seven
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "2.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    ENABLE_APP_SANDBOX: "NO"
+    ENABLE_HARDENED_RUNTIME: "NO"
+    GENERATE_INFOPLIST_FILE: "YES"
+    CODE_SIGN_STYLE: Automatic
+    CODE_SIGN_IDENTITY: "-"
+targets:
+  CleanMyMac:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources
+    settings:
+      base:
+        PRODUCT_NAME: CleanMyMac
+        PRODUCT_BUNDLE_IDENTIFIER: net.seven.CleanMyMac
+        INFOPLIST_KEY_CFBundleDisplayName: CleanMyMac
+        INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.utilities"
+        INFOPLIST_KEY_LSMinimumSystemVersion: "14.0"
+        INFOPLIST_KEY_NSHumanReadableCopyright: "MIT License"
+        MACOSX_DEPLOYMENT_TARGET: "14.0"

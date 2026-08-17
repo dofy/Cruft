@@ -1,0 +1,7 @@
+# Xcode / xcodegen
+CleanMyMac.xcodeproj/
+DerivedData/
+build/
+*.xcuserstate
+xcuserdata/
+.DS_Store
