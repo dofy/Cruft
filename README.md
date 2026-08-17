@@ -34,7 +34,8 @@ protected file just gets skipped instead of aborting the whole run.
   computed in the background, and re-estimated after a run.
 - **Per-task details** — an ⓘ button on every row opens a popover listing the
   exact paths / commands that task touches.
-- **Live log** — output streams into a console pane while tasks run.
+- **Live log** — a collapsible console pane (collapsed by default, auto-expands
+  during a run) streams task output.
 - **Freed-space report** — the footer shows how much was reclaimed.
 - **Confirmation gate** — deletions are irreversible, so a run must be confirmed.
 - **Fixed width** — the window width is locked (no zoom / full screen); only the
