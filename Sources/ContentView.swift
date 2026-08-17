@@ -1,13 +1,12 @@
 import SwiftUI
 import AppKit
 
-// 锁定窗口：禁用缩放/最大化/全屏，固定尺寸
+// 禁用最大化/全屏；宽高约束交给 SwiftUI 的 windowResizability(.contentSize)
 struct WindowConfigurator: NSViewRepresentable {
     func makeNSView(context: Context) -> NSView {
         let view = NSView()
         DispatchQueue.main.async {
             guard let window = view.window else { return }
-            window.styleMask.remove(.resizable)
             window.collectionBehavior.remove(.fullScreenPrimary)
             window.collectionBehavior.insert(.fullScreenNone)
             window.standardWindowButton(.zoomButton)?.isEnabled = false
@@ -154,6 +153,7 @@ struct ContentView: View {
             .keyboardShortcut(.defaultAction)
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
+            .focusable(false)
             .disabled(vm.isRunning || vm.selectedCount == 0)
         }
         .padding(20)
@@ -199,6 +199,7 @@ struct TaskRowView: View {
                     .foregroundStyle(.secondary)
             }
             .buttonStyle(.borderless)
+            .focusable(false)
             .help("查看清理详情")
             .popover(isPresented: $showInfo, arrowEdge: .bottom) {
                 DetailPopover(kind: item.kind)
@@ -207,6 +208,7 @@ struct TaskRowView: View {
             Toggle("", isOn: $isEnabled)
                 .labelsHidden()
                 .toggleStyle(.switch)
+                .focusable(false)
                 .disabled(!item.isAvailable || locked)
         }
         .padding(12)

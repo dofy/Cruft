@@ -1,6 +1,6 @@
 name: CleanMyMac
 options:
-  bundleIdPrefix: net.seven
+  bundleIdPrefix: org.phpz.app.mac
   deploymentTarget:
     macOS: "14.0"
   createIntermediateGroups: true
@@ -23,7 +23,8 @@ targets:
     settings:
       base:
         PRODUCT_NAME: CleanMyMac
-        PRODUCT_BUNDLE_IDENTIFIER: net.seven.CleanMyMac
+        PRODUCT_BUNDLE_IDENTIFIER: org.phpz.app.mac.CleanMyMac
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         INFOPLIST_KEY_CFBundleDisplayName: CleanMyMac
         INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.utilities"
         INFOPLIST_KEY_LSMinimumSystemVersion: "14.0"
