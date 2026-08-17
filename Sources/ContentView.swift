@@ -19,6 +19,7 @@ struct WindowConfigurator: NSViewRepresentable {
 struct ContentView: View {
     @StateObject private var vm = CleanerViewModel()
     @State private var showConfirm = false
+    @State private var showLog = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -32,6 +33,9 @@ struct ContentView: View {
         }
         .background(.background)
         .background(WindowConfigurator())
+        .onChange(of: vm.isRunning) { _, running in
+            if running { withAnimation { showLog = true } }
+        }
         .confirmationDialog(
             "确认清理？",
             isPresented: $showConfirm,
@@ -104,20 +108,47 @@ struct ContentView: View {
     // MARK: - Log console
 
     private var logConsole: some View {
-        ScrollViewReader { proxy in
-            ScrollView {
-                Text(vm.log.isEmpty ? "日志将在这里显示…" : vm.log)
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundStyle(vm.log.isEmpty ? .secondary : .primary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .textSelection(.enabled)
-                    .padding(10)
-                    .id("logtail")
+        VStack(spacing: 0) {
+            Button {
+                withAnimation { showLog.toggle() }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: showLog ? "chevron.down" : "chevron.right")
+                        .font(.caption.weight(.semibold))
+                    Text("日志")
+                        .font(.caption.weight(.medium))
+                    if !showLog && !vm.log.isEmpty {
+                        Circle()
+                            .fill(.tint)
+                            .frame(width: 5, height: 5)
+                    }
+                    Spacer()
+                }
+                .foregroundStyle(.secondary)
+                .contentShape(Rectangle())
+                .padding(.horizontal, 12)
+                .padding(.vertical, 7)
             }
-            .frame(height: 150)
-            .background(Color.secondary.opacity(0.06))
-            .onChange(of: vm.log) { _, _ in
-                withAnimation { proxy.scrollTo("logtail", anchor: .bottom) }
+            .buttonStyle(.plain)
+            .focusable(false)
+
+            if showLog {
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        Text(vm.log.isEmpty ? "日志将在这里显示…" : vm.log)
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundStyle(vm.log.isEmpty ? .secondary : .primary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .textSelection(.enabled)
+                            .padding(10)
+                            .id("logtail")
+                    }
+                    .frame(height: 150)
+                    .background(Color.secondary.opacity(0.06))
+                    .onChange(of: vm.log) { _, _ in
+                        withAnimation { proxy.scrollTo("logtail", anchor: .bottom) }
+                    }
+                }
             }
         }
     }

@@ -6,7 +6,7 @@ struct CruftApp: App {
         WindowGroup {
             ContentView()
                 .frame(width: 660)
-                .frame(minHeight: 520, idealHeight: 820, maxHeight: .infinity)
+                .frame(minHeight: 520, idealHeight: 940, maxHeight: .infinity)
         }
         .windowResizability(.contentSize)
     }
