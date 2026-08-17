@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct CleanMyMacApp: App {
+struct CruftApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()

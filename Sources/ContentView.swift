@@ -54,7 +54,7 @@ struct ContentView: View {
                 .font(.system(size: 30, weight: .semibold))
                 .foregroundStyle(.tint)
             VStack(alignment: .leading, spacing: 2) {
-                Text("CleanMyMac")
+                Text("Cruft")
                     .font(.title2.weight(.bold))
                 Text("清理开发过程中产生的垃圾文件")
                     .font(.caption)

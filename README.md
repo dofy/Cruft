@@ -1,4 +1,4 @@
-# CleanMyMac
+# Cruft
 
 A simple native **macOS app** to clean up the junk files generated during daily
 development work — Xcode DerivedData, caches, logs, Homebrew leftovers, and more.
@@ -37,8 +37,8 @@ protected file just gets skipped instead of aborting the whole run.
 - **Live log** — output streams into a console pane while tasks run.
 - **Freed-space report** — the footer shows how much was reclaimed.
 - **Confirmation gate** — deletions are irreversible, so a run must be confirmed.
-- **Fixed window** — the window is a fixed size (non-resizable, no zoom / full
-  screen) to keep the layout tidy.
+- **Fixed width** — the window width is locked (no zoom / full screen); only the
+  height is resizable, to keep the layout tidy.
 - **Auto-disable** — tasks whose CLI tool is missing grey out automatically.
 
 ## Build & Run
@@ -47,14 +47,14 @@ Requires Xcode 16+ and [xcodegen](https://github.com/yonaskolb/XcodeGen)
 (`brew install xcodegen`). The `.xcodeproj` is generated, not committed.
 
 ```bash
-xcodegen generate                 # regenerate CleanMyMac.xcodeproj
-open CleanMyMac.xcodeproj         # then Run (⌘R) in Xcode
+xcodegen generate                 # regenerate Cruft.xcodeproj
+open Cruft.xcodeproj              # then Run (⌘R) in Xcode
 ```
 
 Or build from the command line:
 
 ```bash
-xcodebuild -project CleanMyMac.xcodeproj -scheme CleanMyMac -configuration Release build
+xcodebuild -project Cruft.xcodeproj -scheme Cruft -configuration Release build
 ```
 
 The app is **not sandboxed** — it needs to invoke `brew`/`mas`/`pod`/`gem` and
@@ -64,7 +64,7 @@ delete cache files in your home directory.
 
 ```
 Sources/
-├── CleanMyMacApp.swift     # @main App entry
+├── CruftApp.swift          # @main App entry
 ├── ContentView.swift       # SwiftUI UI (checklist, log, footer)
 ├── CleanerViewModel.swift  # @MainActor state + run loop
 ├── CleanerEngine.swift     # maps each task to shell / file actions

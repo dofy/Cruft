@@ -1,4 +1,4 @@
-name: CleanMyMac
+name: Cruft
 options:
   bundleIdPrefix: org.phpz.app.mac
   deploymentTarget:
@@ -15,17 +15,17 @@ settings:
     CODE_SIGN_STYLE: Automatic
     CODE_SIGN_IDENTITY: "-"
 targets:
-  CleanMyMac:
+  Cruft:
     type: application
     platform: macOS
     sources:
       - path: Sources
     settings:
       base:
-        PRODUCT_NAME: CleanMyMac
-        PRODUCT_BUNDLE_IDENTIFIER: org.phpz.app.mac.CleanMyMac
+        PRODUCT_NAME: Cruft
+        PRODUCT_BUNDLE_IDENTIFIER: org.phpz.app.mac.Cruft
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        INFOPLIST_KEY_CFBundleDisplayName: CleanMyMac
+        INFOPLIST_KEY_CFBundleDisplayName: Cruft
         INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.utilities"
         INFOPLIST_KEY_LSMinimumSystemVersion: "14.0"
         INFOPLIST_KEY_NSHumanReadableCopyright: "MIT License"
