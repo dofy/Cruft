@@ -19,8 +19,18 @@ final class CleanerViewModel: ObservableObject {
     }
 
     init() {
+        let fm = FileManager.default
         items = CleanupKind.allCases.map { kind in
-            let available = kind.requiredTool.map(Shell.toolExists) ?? true
+            let available: Bool
+            if let tool = kind.requiredTool {
+                available = Shell.toolExists(tool)
+            } else if kind.detectionPaths.isEmpty {
+                available = true // 无条件显示（系统目录必然存在）
+            } else {
+                available = kind.detectionPaths.contains {
+                    fm.fileExists(atPath: ($0 as NSString).expandingTildeInPath)
+                }
+            }
             return CleanupItem(kind: kind, isEnabled: kind.defaultEnabled && available, isAvailable: available)
         }
         estimateSizes()
@@ -91,7 +101,29 @@ final class CleanerViewModel: ObservableObject {
         currentTask = ""
         isRunning = false
         finished = true
+        writeHistory(tasks: selected.map(\.kind.title), freed: freedBytes)
         estimateSizes() // 清理后重新估算，体积应下降
+    }
+
+    // 将本次操作追加到 ~/Library/Logs/Cruft/operations.log
+    private func writeHistory(tasks: [String], freed: Int64) {
+        let freedStr = ByteCountFormatter.string(fromByteCount: freed, countStyle: .file)
+        let stamp = ISO8601DateFormatter().string(from: Date())
+        let line = "[\(stamp)] 释放 \(freedStr) | \(tasks.joined(separator: ", "))\n"
+        Task.detached(priority: .utility) {
+            let fm = FileManager.default
+            let dir = ("~/Library/Logs/Cruft" as NSString).expandingTildeInPath
+            try? fm.createDirectory(atPath: dir, withIntermediateDirectories: true)
+            let file = (dir as NSString).appendingPathComponent("operations.log")
+            guard let data = line.data(using: .utf8) else { return }
+            if let handle = FileHandle(forWritingAtPath: file) {
+                handle.seekToEndOfFile()
+                handle.write(data)
+                try? handle.close()
+            } else {
+                try? data.write(to: URL(fileURLWithPath: file))
+            }
+        }
     }
 
     private func appendLog(_ s: String) {

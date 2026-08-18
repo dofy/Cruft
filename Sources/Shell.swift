@@ -93,6 +93,19 @@ enum FileCleaner {
         return total
     }
 
+    // 移到废纸篓（可恢复）；成功返回 true
+    @discardableResult
+    static func moveToTrash(_ path: String) -> Bool {
+        let expanded = (path as NSString).expandingTildeInPath
+        let url = URL(fileURLWithPath: expanded)
+        do {
+            try FileManager.default.trashItem(at: url, resultingItemURL: nil)
+            return true
+        } catch {
+            return false
+        }
+    }
+
     // 用户目录所在卷的可用字节
     static func freeBytes() -> Int64 {
         let attrs = try? FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory())

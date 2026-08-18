@@ -11,6 +11,7 @@
 		15E927CFE11D24CC7F5EB24F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4080178BDA8592059C574C8F /* ContentView.swift */; };
 		2091AB09024B33003634A923 /* CruftApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2AD28DAB896ACEDD9BFF87 /* CruftApp.swift */; };
 		3EFBA2FEFA93F0A8E255B236 /* CleanerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A5BE3757D6ADDE6E2B415A /* CleanerViewModel.swift */; };
+		70EDB643DC517A7E58F576F1 /* Scanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8883DA2406508E99A231FC4A /* Scanner.swift */; };
 		7DBA7385CD34EFB4491C0690 /* Shell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A84419596D61A0062D5F87 /* Shell.swift */; };
 		C7DF909FC0E0240F85B94D82 /* CleanerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0969070B6A9CCDA359AD9705 /* CleanerEngine.swift */; };
 		EC3AA8C53E7F24225287A7BA /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7BC56FF3C179BAD3CA62F8 /* Models.swift */; };
@@ -21,6 +22,7 @@
 		1A2AD28DAB896ACEDD9BFF87 /* CruftApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CruftApp.swift; sourceTree = "<group>"; };
 		4080178BDA8592059C574C8F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		43A5BE3757D6ADDE6E2B415A /* CleanerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanerViewModel.swift; sourceTree = "<group>"; };
+		8883DA2406508E99A231FC4A /* Scanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scanner.swift; sourceTree = "<group>"; };
 		96E59D13C5E77C8F7B71FEDB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9C7BC56FF3C179BAD3CA62F8 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		EE7C2F4462A12CF9B4D7EF0C /* Cruft.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cruft.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -45,6 +47,7 @@
 				4080178BDA8592059C574C8F /* ContentView.swift */,
 				1A2AD28DAB896ACEDD9BFF87 /* CruftApp.swift */,
 				9C7BC56FF3C179BAD3CA62F8 /* Models.swift */,
+				8883DA2406508E99A231FC4A /* Scanner.swift */,
 				F2A84419596D61A0062D5F87 /* Shell.swift */,
 			);
 			path = Sources;
@@ -133,6 +136,7 @@
 				15E927CFE11D24CC7F5EB24F /* ContentView.swift in Sources */,
 				2091AB09024B33003634A923 /* CruftApp.swift in Sources */,
 				EC3AA8C53E7F24225287A7BA /* Models.swift in Sources */,
+				70EDB643DC517A7E58F576F1 /* Scanner.swift in Sources */,
 				7DBA7385CD34EFB4491C0690 /* Shell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

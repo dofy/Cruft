@@ -13,6 +13,17 @@ enum CleanupKind: String, CaseIterable, Identifiable {
     case masUpgrade
     case cocoapods
     case xcode
+    // 开发生态缓存
+    case npm
+    case pnpm
+    case yarn
+    case cargo
+    case go
+    case gradle
+    case maven
+    case pip
+    case swiftpm
+    // 系统 & 工具
     case caches
     case logs
     case trash
@@ -27,6 +38,15 @@ enum CleanupKind: String, CaseIterable, Identifiable {
         case .masUpgrade: return "更新 App Store 应用"
         case .cocoapods: return "清理 CocoaPods 缓存"
         case .xcode: return "清理 Xcode"
+        case .npm: return "清理 npm 缓存"
+        case .pnpm: return "清理 pnpm store"
+        case .yarn: return "清理 Yarn 缓存"
+        case .cargo: return "清理 Cargo 缓存"
+        case .go: return "清理 Go 缓存"
+        case .gradle: return "清理 Gradle 缓存"
+        case .maven: return "清理 Maven 仓库"
+        case .pip: return "清理 pip 缓存"
+        case .swiftpm: return "清理 SwiftPM 缓存"
         case .caches: return "清理系统缓存"
         case .logs: return "清理应用日志"
         case .trash: return "清空废纸篓"
@@ -41,6 +61,15 @@ enum CleanupKind: String, CaseIterable, Identifiable {
         case .masUpgrade: return "mas upgrade"
         case .cocoapods: return "pod cache clean --all"
         case .xcode: return "DerivedData、Archives、旧 DeviceSupport、无效模拟器"
+        case .npm: return "~/.npm/_cacache"
+        case .pnpm: return "pnpm store prune"
+        case .yarn: return "~/Library/Caches/Yarn"
+        case .cargo: return "~/.cargo/registry 缓存与源码"
+        case .go: return "go clean -cache -modcache"
+        case .gradle: return "~/.gradle/caches"
+        case .maven: return "~/.m2/repository（下次构建会重新下载）"
+        case .pip: return "~/Library/Caches/pip"
+        case .swiftpm: return "~/Library/Caches/org.swift.swiftpm"
         case .caches: return "~/Library/Caches 内容"
         case .logs: return "~/Library/Logs 内容"
         case .trash: return "~/.Trash 内容"
@@ -55,6 +84,15 @@ enum CleanupKind: String, CaseIterable, Identifiable {
         case .masUpgrade: return "arrow.down.app"
         case .cocoapods: return "shippingbox"
         case .xcode: return "hammer"
+        case .npm: return "cube.box"
+        case .pnpm: return "cube.box.fill"
+        case .yarn: return "cube.transparent"
+        case .cargo: return "shippingbox.circle"
+        case .go: return "g.circle"
+        case .gradle: return "hammer.circle"
+        case .maven: return "m.circle"
+        case .pip: return "p.circle"
+        case .swiftpm: return "swift"
         case .caches: return "internaldrive"
         case .logs: return "doc.text"
         case .trash: return "trash"
@@ -78,7 +116,24 @@ enum CleanupKind: String, CaseIterable, Identifiable {
         case .cocoapods: return "pod"
         case .gemCleanup: return "gem"
         case .xcode: return "xcrun"
+        case .pnpm: return "pnpm"
+        case .go: return "go"
+        case .npm, .yarn, .cargo, .gradle, .maven, .pip, .swiftpm: return nil
         case .caches, .logs, .trash: return nil
+        }
+    }
+
+    // 无外部工具、但按目录是否存在判断是否显示；空表示无条件显示
+    var detectionPaths: [String] {
+        switch self {
+        case .npm: return ["~/.npm"]
+        case .yarn: return ["~/Library/Caches/Yarn"]
+        case .cargo: return ["~/.cargo"]
+        case .gradle: return ["~/.gradle"]
+        case .maven: return ["~/.m2"]
+        case .pip: return ["~/Library/Caches/pip"]
+        case .swiftpm: return ["~/Library/Caches/org.swift.swiftpm"]
+        default: return []
         }
     }
 
@@ -103,6 +158,27 @@ enum CleanupKind: String, CaseIterable, Identifiable {
                 ("xcrun simctl delete unavailable", "删除不可用 / 无效的模拟器"),
                 ("~/Library/Developer/Xcode/iOS DeviceSupport/*", "旧真机调试符号，保留最新一个版本"),
             ]
+        case .npm:
+            return [("~/.npm/_cacache/*", "npm 下载缓存，下次安装会重建")]
+        case .pnpm:
+            return [("pnpm store prune", "删除 pnpm store 中无项目引用的包")]
+        case .yarn:
+            return [("~/Library/Caches/Yarn/*", "Yarn (classic) 全局缓存")]
+        case .cargo:
+            return [
+                ("~/.cargo/registry/cache/*", "crate 下载压缩包"),
+                ("~/.cargo/registry/src/*", "解压的 crate 源码"),
+            ]
+        case .go:
+            return [("go clean -cache -modcache", "构建缓存 + 模块缓存（模块缓存只读，须经 go 删除）")]
+        case .gradle:
+            return [("~/.gradle/caches/*", "Gradle 依赖与构建缓存")]
+        case .maven:
+            return [("~/.m2/repository/*", "Maven 本地仓库；清空后下次构建会重新下载全部依赖")]
+        case .pip:
+            return [("~/Library/Caches/pip/*", "pip wheel / http 缓存")]
+        case .swiftpm:
+            return [("~/Library/Caches/org.swift.swiftpm/*", "SwiftPM 依赖缓存")]
         case .caches:
             return [("~/Library/Caches/*", "用户级应用缓存，App 会按需重建")]
         case .logs:
@@ -124,23 +200,38 @@ enum CleanupKind: String, CaseIterable, Identifiable {
         case .xcode:
             let d = "~/Library/Developer/Xcode"
             return ["\(d)/DerivedData", "\(d)/Archives", "\(d)/Products", "\(d)/iOS DeviceSupport"]
+        case .npm:
+            return ["~/.npm/_cacache"]
+        case .yarn:
+            return ["~/Library/Caches/Yarn"]
+        case .cargo:
+            return ["~/.cargo/registry/cache", "~/.cargo/registry/src"]
+        case .gradle:
+            return ["~/.gradle/caches"]
+        case .maven:
+            return ["~/.m2/repository"]
+        case .pip:
+            return ["~/Library/Caches/pip"]
+        case .swiftpm:
+            return ["~/Library/Caches/org.swift.swiftpm"]
         case .caches:
             return ["~/Library/Caches"]
         case .logs:
             return ["~/Library/Logs"]
         case .trash:
             return ["~/.Trash"]
-        case .brewUpdate, .masUpgrade, .brewCleanup, .gemCleanup:
+        case .brewUpdate, .masUpgrade, .brewCleanup, .gemCleanup, .pnpm, .go:
             return []
         }
     }
 
     var isMeasurable: Bool { !measurablePaths.isEmpty }
 
-    // 默认勾选：清理项默认开，网络更新项默认关
+    // 默认勾选：清理项默认开；网络更新项与代价高昂的重建项默认关
     var defaultEnabled: Bool {
         switch self {
         case .brewUpdate, .masUpgrade: return false
+        case .maven: return false // 清空后全量重新下载，成本高，默认不选
         default: return true
         }
     }

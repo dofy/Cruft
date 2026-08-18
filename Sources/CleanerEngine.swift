@@ -22,6 +22,35 @@ enum CleanerEngine {
             Shell.run("xcrun simctl delete unavailable", log: log)
             pruneDeviceSupport(base: "\(dev)/iOS DeviceSupport", log: log)
 
+        case .npm:
+            FileCleaner.removeContents(of: "~/.npm/_cacache", log: log)
+
+        case .pnpm:
+            Shell.run("pnpm store prune", log: log)
+
+        case .yarn:
+            FileCleaner.removeContents(of: "~/Library/Caches/Yarn", log: log)
+
+        case .cargo:
+            FileCleaner.removeContents(of: "~/.cargo/registry/cache", log: log)
+            FileCleaner.removeContents(of: "~/.cargo/registry/src", log: log)
+
+        case .go:
+            // 模块缓存为只读文件，须经 go 自身删除，不能直接 rm
+            Shell.run("go clean -cache -modcache", log: log)
+
+        case .gradle:
+            FileCleaner.removeContents(of: "~/.gradle/caches", log: log)
+
+        case .maven:
+            FileCleaner.removeContents(of: "~/.m2/repository", log: log)
+
+        case .pip:
+            FileCleaner.removeContents(of: "~/Library/Caches/pip", log: log)
+
+        case .swiftpm:
+            FileCleaner.removeContents(of: "~/Library/Caches/org.swift.swiftpm", log: log)
+
         case .caches:
             FileCleaner.removeContents(of: "~/Library/Caches", log: log)
 
