@@ -66,6 +66,20 @@ enum CleanerEngine {
 
         case .gemCleanup:
             Shell.run("gem cleanup", log: log)
+
+        case .dockerImages:
+            // 仅悬挂 image（<none>:<none>）。用 -a 会连未运行但可能有用的 image 一并删掉，
+            // 对开发者不友好，故不加 -a。
+            Shell.run("docker image prune -f", log: log)
+
+        case .dockerBuildCache:
+            Shell.run("docker builder prune -af", log: log)
+
+        case .dockerContainers:
+            Shell.run("docker container prune -f", log: log)
+
+        case .dockerVolumes:
+            Shell.run("docker volume prune -f", log: log)
         }
     }
 

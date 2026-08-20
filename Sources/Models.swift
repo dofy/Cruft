@@ -29,6 +29,11 @@ enum CleanupKind: String, CaseIterable, Identifiable {
     case trash
     case brewCleanup
     case gemCleanup
+    // Docker
+    case dockerImages
+    case dockerBuildCache
+    case dockerContainers
+    case dockerVolumes
 
     var id: String { rawValue }
 
@@ -52,6 +57,10 @@ enum CleanupKind: String, CaseIterable, Identifiable {
         case .trash: return "清空废纸篓"
         case .brewCleanup: return "清理 Homebrew"
         case .gemCleanup: return "清理 Ruby Gem"
+        case .dockerImages: return "清理 Docker 悬挂 image"
+        case .dockerBuildCache: return "清理 Docker 构建缓存"
+        case .dockerContainers: return "清理 Docker 已停容器"
+        case .dockerVolumes: return "清理 Docker 未挂载 volume"
         }
     }
 
@@ -75,6 +84,10 @@ enum CleanupKind: String, CaseIterable, Identifiable {
         case .trash: return "~/.Trash 内容"
         case .brewCleanup: return "brew cleanup"
         case .gemCleanup: return "gem cleanup"
+        case .dockerImages: return "docker image prune -f（仅 <none>:<none> 悬挂 image）"
+        case .dockerBuildCache: return "docker builder prune -af（重建可再生）"
+        case .dockerContainers: return "docker container prune -f（已停止容器）"
+        case .dockerVolumes: return "docker volume prune -f（未被容器引用的 volume，数据不可恢复）"
         }
     }
 
@@ -98,6 +111,10 @@ enum CleanupKind: String, CaseIterable, Identifiable {
         case .trash: return "trash"
         case .brewCleanup: return "cup.and.saucer"
         case .gemCleanup: return "diamond"
+        case .dockerImages: return "shippingbox.and.arrow.backward"
+        case .dockerBuildCache: return "hammer.fill"
+        case .dockerContainers: return "square.stack.3d.up"
+        case .dockerVolumes: return "externaldrive"
         }
     }
 
@@ -118,6 +135,7 @@ enum CleanupKind: String, CaseIterable, Identifiable {
         case .xcode: return "xcrun"
         case .pnpm: return "pnpm"
         case .go: return "go"
+        case .dockerImages, .dockerBuildCache, .dockerContainers, .dockerVolumes: return "docker"
         case .npm, .yarn, .cargo, .gradle, .maven, .pip, .swiftpm: return nil
         case .caches, .logs, .trash: return nil
         }
@@ -189,6 +207,14 @@ enum CleanupKind: String, CaseIterable, Identifiable {
             return [("brew cleanup", "删除旧版本、下载缓存、失效符号链接")]
         case .gemCleanup:
             return [("gem cleanup", "删除各 gem 的旧版本，仅保留最新")]
+        case .dockerImages:
+            return [("docker image prune -f", "删除无 tag 的 <none>:<none> 悬挂 image；已被容器引用的 image 保留")]
+        case .dockerBuildCache:
+            return [("docker builder prune -af", "清空 BuildKit 构建缓存；下次构建会重建，速度会变慢")]
+        case .dockerContainers:
+            return [("docker container prune -f", "删除已停止的容器；运行中容器不受影响")]
+        case .dockerVolumes:
+            return [("docker volume prune -f", "删除未被任何容器引用的 volume；卷内数据不可恢复，默认关闭")]
         }
     }
 
@@ -222,6 +248,9 @@ enum CleanupKind: String, CaseIterable, Identifiable {
             return ["~/.Trash"]
         case .brewUpdate, .masUpgrade, .brewCleanup, .gemCleanup, .pnpm, .go:
             return []
+        case .dockerImages, .dockerBuildCache, .dockerContainers, .dockerVolumes:
+            // docker 空间由 daemon 统计（docker system df），非文件系统目录
+            return []
         }
     }
 
@@ -232,6 +261,7 @@ enum CleanupKind: String, CaseIterable, Identifiable {
         switch self {
         case .brewUpdate, .masUpgrade: return false
         case .maven: return false // 清空后全量重新下载，成本高，默认不选
+        case .dockerVolumes: return false // 卷内数据不可恢复，默认不选
         default: return true
         }
     }
