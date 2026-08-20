@@ -20,6 +20,7 @@ enum Pane: String, CaseIterable, Identifiable {
     case tasks = "清理"
     case projects = "项目产物"
     case installers = "安装包"
+    case background = "背景 App"
     var id: String { rawValue }
 }
 
@@ -27,6 +28,7 @@ struct ContentView: View {
     @StateObject private var vm = CleanerViewModel()
     @StateObject private var projectsVM = ScanViewModel(mode: .projects)
     @StateObject private var installersVM = ScanViewModel(mode: .installers)
+    @StateObject private var btmVM = BTMViewModel()
     @State private var pane: Pane = .tasks
     @State private var showConfirm = false
     @State private var showScanDeleteConfirm = false
@@ -57,6 +59,8 @@ struct ContentView: View {
                 scanPane(projectsVM, emptyHint: "未发现项目产物目录")
             case .installers:
                 scanPane(installersVM, emptyHint: "未发现 .dmg / .pkg 安装包")
+            case .background:
+                backgroundPane
             }
 
             Divider()
@@ -90,7 +94,7 @@ struct ContentView: View {
         switch pane {
         case .projects: return projectsVM
         case .installers: return installersVM
-        case .tasks: return nil
+        case .tasks, .background: return nil
         }
     }
 
@@ -259,6 +263,7 @@ struct ContentView: View {
         case .tasks: taskFooter
         case .projects: scanFooter(projectsVM)
         case .installers: scanFooter(installersVM)
+        case .background: backgroundFooter
         }
     }
 
@@ -342,8 +347,213 @@ struct ContentView: View {
         .padding(20)
     }
 
+    // MARK: - Background App pane
+
+    private var backgroundPane: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 8) {
+                if btmVM.isLoading {
+                    HStack(spacing: 8) {
+                        ProgressView().controlSize(.small)
+                        Text("读取中…").font(.callout).foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.top, 40)
+                } else if !btmVM.hasLoaded {
+                    VStack(spacing: 10) {
+                        Image(systemName: "bolt.badge.clock")
+                            .font(.system(size: 34))
+                            .foregroundStyle(.tertiary)
+                        Text("列出系统「背景 App 活動」——登录项、代理、守护进程、背景任务。\n数据来自 sfltool dumpbtm，只读展示。")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 40)
+                } else if btmVM.filtered.isEmpty {
+                    Text(btmVM.items.isEmpty ? "未读取到背景项" : "无匹配项")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.top, 40)
+                } else {
+                    ForEach(btmVM.filtered) { BTMRowView(item: $0) }
+                }
+            }
+            .padding(20)
+        }
+        .frame(maxHeight: .infinity)
+    }
+
+    private var backgroundFooter: some View {
+        HStack(spacing: 10) {
+            if btmVM.hasLoaded && !btmVM.isLoading {
+                HStack(spacing: 4) {
+                    Text("\(btmVM.items.count) 项 · 启用 \(btmVM.enabledCount)")
+                    if btmVM.orphanCount > 0 {
+                        Text("· 失效 \(btmVM.orphanCount)")
+                            .foregroundStyle(Color.orange)
+                    }
+                }
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .fixedSize()
+
+                TextField("搜索", text: $btmVM.query)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(minWidth: 100, maxWidth: 160)
+
+                if btmVM.orphanCount > 0 {
+                    Toggle("只看失效", isOn: $btmVM.orphanOnly)
+                        .toggleStyle(.checkbox)
+                        .font(.callout)
+                        .fixedSize()
+                }
+            } else {
+                Text("尚未读取")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 0)
+            Button {
+                // macOS 15+：SMAppService.openSystemSettingsLoginItems() 会落到「一般」页；
+                // 直接跳登录项 pane 的 extension bundle id 才对。
+                if let url = URL(string: "x-apple.systempreferences:com.apple.LoginItems-Settings.extension") {
+                    NSWorkspace.shared.open(url)
+                }
+            } label: {
+                Image(systemName: "gear")
+                    .frame(width: 24)
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.large)
+            .focusable(false)
+            .help("打开「登录项与扩展」，手动启用/停用/删除项")
+
+            Button {
+                btmVM.load()
+            } label: {
+                Label(btmVM.hasLoaded ? "刷新" : "读取", systemImage: "arrow.clockwise")
+                    .frame(minWidth: 60)
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+            .focusable(false)
+            .disabled(btmVM.isLoading)
+        }
+        .padding(20)
+    }
+
     private func byteString(_ bytes: Int64) -> String {
         ByteCountFormatter.string(fromByteCount: bytes, countStyle: .file)
+    }
+}
+
+// MARK: - Background App row
+
+struct BTMRowView: View {
+    let item: BTMItem
+    @State private var showInfo = false
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: item.icon)
+                .frame(width: 24)
+                .foregroundStyle(item.isEnabled ? Color.primary : Color.secondary)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(item.name.isEmpty ? "(未命名)" : item.name)
+                    .fontWeight(.medium)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                Text(item.location)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+            }
+
+            Spacer()
+
+            Text(item.typeLabel)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+
+            if item.isOrphaned { orphanBadge }
+            statusBadge
+
+            Button {
+                showInfo.toggle()
+            } label: {
+                Image(systemName: "info.circle").foregroundStyle(.secondary)
+            }
+            .buttonStyle(.borderless)
+            .focusable(false)
+            .help("查看详情")
+            .popover(isPresented: $showInfo, arrowEdge: .bottom) {
+                BTMDetailPopover(item: item)
+            }
+        }
+        .padding(12)
+        .background(Color.secondary.opacity(0.06), in: RoundedRectangle(cornerRadius: 10))
+        .opacity(item.isEnabled ? 1 : 0.6)
+    }
+
+    private var statusBadge: some View {
+        Text(item.isEnabled ? "已启用" : "已停用")
+            .font(.caption.weight(.medium))
+            .foregroundStyle(item.isEnabled ? Color.green : Color.secondary)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 3)
+            .background(
+                (item.isEnabled ? Color.green : Color.secondary).opacity(0.14),
+                in: Capsule()
+            )
+    }
+
+    // backing app / plist 已不在磁盘
+    private var orphanBadge: some View {
+        Text("已失效")
+            .font(.caption.weight(.medium))
+            .foregroundStyle(Color.orange)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 3)
+            .background(Color.orange.opacity(0.16), in: Capsule())
+            .help("backing 文件已不在磁盘")
+    }
+}
+
+struct BTMDetailPopover: View {
+    let item: BTMItem
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label(item.name.isEmpty ? "(未命名)" : item.name, systemImage: item.icon)
+                .font(.headline)
+            row("类型", item.typeLabel)
+            row("状态", item.dispositionRaw)
+            row("开发者", item.developer)
+            row("Team ID", item.teamID)
+            row("Bundle ID", item.bundleID)
+            row("位置", item.isOrphaned ? "\(item.location)  ⚠︎ 文件缺失" : item.location)
+            row("上次使用", item.lastUse)
+        }
+        .padding(16)
+        .frame(width: 400, alignment: .leading)
+    }
+
+    @ViewBuilder
+    private func row(_ label: String, _ value: String) -> some View {
+        if !value.isEmpty {
+            VStack(alignment: .leading, spacing: 1) {
+                Text(label).font(.caption2).foregroundStyle(.secondary)
+                Text(value)
+                    .font(.system(.caption, design: .monospaced))
+                    .textSelection(.enabled)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
     }
 }
 

@@ -12,6 +12,7 @@
 		2091AB09024B33003634A923 /* CruftApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2AD28DAB896ACEDD9BFF87 /* CruftApp.swift */; };
 		3EFBA2FEFA93F0A8E255B236 /* CleanerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A5BE3757D6ADDE6E2B415A /* CleanerViewModel.swift */; };
 		70EDB643DC517A7E58F576F1 /* Scanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8883DA2406508E99A231FC4A /* Scanner.swift */; };
+		7C9FBBA8B3B0C09C3EBEDE8C /* BTM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 131A0067A788DD1E13A1BE25 /* BTM.swift */; };
 		7DBA7385CD34EFB4491C0690 /* Shell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A84419596D61A0062D5F87 /* Shell.swift */; };
 		C7DF909FC0E0240F85B94D82 /* CleanerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0969070B6A9CCDA359AD9705 /* CleanerEngine.swift */; };
 		EC3AA8C53E7F24225287A7BA /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7BC56FF3C179BAD3CA62F8 /* Models.swift */; };
@@ -19,6 +20,7 @@
 
 /* Begin PBXFileReference section */
 		0969070B6A9CCDA359AD9705 /* CleanerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanerEngine.swift; sourceTree = "<group>"; };
+		131A0067A788DD1E13A1BE25 /* BTM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTM.swift; sourceTree = "<group>"; };
 		1A2AD28DAB896ACEDD9BFF87 /* CruftApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CruftApp.swift; sourceTree = "<group>"; };
 		4080178BDA8592059C574C8F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		43A5BE3757D6ADDE6E2B415A /* CleanerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanerViewModel.swift; sourceTree = "<group>"; };
@@ -42,6 +44,7 @@
 			isa = PBXGroup;
 			children = (
 				96E59D13C5E77C8F7B71FEDB /* Assets.xcassets */,
+				131A0067A788DD1E13A1BE25 /* BTM.swift */,
 				0969070B6A9CCDA359AD9705 /* CleanerEngine.swift */,
 				43A5BE3757D6ADDE6E2B415A /* CleanerViewModel.swift */,
 				4080178BDA8592059C574C8F /* ContentView.swift */,
@@ -131,6 +134,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7C9FBBA8B3B0C09C3EBEDE8C /* BTM.swift in Sources */,
 				C7DF909FC0E0240F85B94D82 /* CleanerEngine.swift in Sources */,
 				3EFBA2FEFA93F0A8E255B236 /* CleanerViewModel.swift in Sources */,
 				15E927CFE11D24CC7F5EB24F /* ContentView.swift in Sources */,
