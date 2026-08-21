@@ -13,8 +13,9 @@ reclaimed.
 
 ## What it does
 
-Three panes, switched from a segmented control: **清理 (Clean)**, **项目产物
-(Project artifacts)**, **安装包 (Installers)**.
+Six panes in a native sidebar: **清理 (Clean)**, **项目产物 (Project
+artifacts)**, **安装包 (Installers)**, **应用清理 (Applications)**, **背景 App
+(Background activity)**, and **恢复历史 (Recovery history)**.
 
 ### Clean pane
 
@@ -70,6 +71,27 @@ active tree. Selected items go to the **Trash** (recoverable), not a hard delete
 Scans `~/Downloads` and `~/Desktop` for leftover `.dmg` / `.pkg` files. All start
 unselected — you confirm each. Selected items go to the **Trash**.
 
+### Applications pane
+
+Scans `/Applications` and `~/Applications`, then checks selected apps against
+known user-level Library locations. Exact bundle-ID matches start selected;
+name-only matches are shown as lower-confidence candidates and start unselected.
+The app bundle and confirmed related files move to the Trash together.
+
+Cruft does not install a privileged helper. Apps protected by administrator
+ownership are reported as failures instead of triggering an elevated deletion.
+
+### Recovery history
+
+File-based cleanup, project artifacts, installers, and application cleanup save
+the original and trashed paths in
+`~/Library/Application Support/Cruft/deletion-history.json`. A batch can be
+restored while its files remain in the Trash. Existing files at the original
+path are never overwritten.
+
+Command-based jobs (`brew`, package-manager commands, `simctl`, Docker prune)
+and emptying the Trash remain non-recoverable.
+
 ## Interface
 
 - **Size estimates** — each cleanable directory shows its current disk usage,
@@ -79,27 +101,37 @@ unselected — you confirm each. Selected items go to the **Trash**.
 - **Collapsible log** — a console pane (collapsed by default, auto-expands during
   a run) streams task output live.
 - **Freed-space report** — the footer shows how much was reclaimed.
-- **Confirmation gate** — deletions are irreversible, so a run must be confirmed.
+- **Confirmation gate** — every cleanup run must be confirmed and explains which
+  operations are recoverable.
 - **Operation history** — each Clean run is appended to
   `~/Library/Logs/Cruft/operations.log` (timestamp, freed bytes, tasks).
-- **Fixed width** — the window width is locked (no zoom / full screen); only the
-  height is resizable.
+- **Native maintenance-console UI** — resizable sidebar navigation, storage gauge,
+  grouped surfaces, system materials, SF Symbols, and light/dark mode support.
+- **Central permission gate** — startup checks Full Disk Access without enumerating
+  cleanup folders. Until access is granted, scanning and cleanup stay paused behind
+  one in-app permission reminder.
 
 ## Safety
 
-- Clean-pane deletions run through Swift's `FileManager`, not `rm -rf`, so a
-  single protected file is skipped instead of aborting the whole run.
+- File-based Clean-pane deletions move to the Trash through Swift's
+  `FileManager`; a single protected file is skipped instead of aborting the run.
 - Scanner-pane deletions (project artifacts, installers) move to the **Trash**
   via `trashItem`, so they are recoverable until the Trash is emptied.
-- Only user-level paths are touched (`~/Library/...`, `~/.Trash`, home-directory
-  caches). System-level `/Library/Logs` and the like are left alone.
+- Cleanup targets stay in user-owned locations (`~/Library/...`, `~/.Trash`,
+  home-directory caches). The Applications pane may also move an explicitly
+  selected app bundle from `/Applications`; it never scans or removes broad
+  system directories such as `/Library` or `/System`.
+- Cruft requests **Full Disk Access** because macOS protects app data, logs,
+  Downloads, Desktop, and Trash separately. The permission is managed by macOS;
+  Cruft does not scan those locations before the permission check succeeds.
 - The app is **not sandboxed** — it needs to invoke `brew`/`mas`/`pod`/`gem`/
   `go`/`pnpm`/`xcrun` and delete cache files in your home directory.
 
 ## Build & Run
 
 Requires Xcode 16+ and [xcodegen](https://github.com/yonaskolb/XcodeGen)
-(`brew install xcodegen`). The `.xcodeproj` is generated, not committed.
+(`brew install xcodegen`). Regenerate the checked-in `.xcodeproj` after editing
+`project.yml`.
 
 ```bash
 xcodegen generate                # regenerate Cruft.xcodeproj
@@ -117,13 +149,20 @@ xcodebuild -project Cruft.xcodeproj -scheme Cruft -configuration Release build
 ```
 Sources/
 ├── CruftApp.swift          # @main App entry + window sizing
-├── ContentView.swift       # SwiftUI UI (3-pane switcher, checklist, scanners, log, footer)
+├── ContentView.swift       # app shell, sidebar, feature navigation
+├── FeatureViews.swift      # clean/scanner/app/background/history panes
+├── RowViews.swift          # reusable task, scan, app, BTM, and history rows
+├── DesignSystem.swift      # palette, surfaces, storage gauge, controls
+├── FolderAccess.swift      # Full Disk Access probe, reminder, and settings link
+├── AppCleaner.swift        # installed-app and conservative related-file scanning
+├── DeletionHistory.swift   # persistent recoverable batches and restore logic
 ├── CleanerViewModel.swift  # @MainActor state + run loop + history
 ├── CleanerEngine.swift     # maps each task to shell / file actions
 ├── Scanner.swift           # project-artifact + installer scanners, ScanViewModel
 ├── Shell.swift             # Process runner + FileManager cleaner + moveToTrash
 ├── Models.swift            # CleanupKind / CleanupItem
 └── Assets.xcassets/        # app icon
+Tests/CruftTests.swift      # matching, path guards, and restore tests
 project.yml                 # xcodegen spec
 ```
 

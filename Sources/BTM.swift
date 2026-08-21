@@ -73,7 +73,12 @@ enum BTM {
     }
 
     static func parse(_ text: String) -> [BTMItem] {
-        var items: [BTMItem] = []
+        struct Candidate {
+            let item: BTMItem
+            let generation: Int
+        }
+
+        var candidatesByUUID: [String: Candidate] = [:]
         var fields: [String: String] = [:]
 
         func flush() {
@@ -83,7 +88,7 @@ enum BTM {
             let loc = (url.isEmpty || url == "(null)") ? exec : url
             // 只对真实路径查磁盘；无路径项（background tasks 等）视为存在，不误标孤立
             let exists = loc.hasPrefix("/") ? FileManager.default.fileExists(atPath: loc) : true
-            items.append(BTMItem(
+            let item = BTMItem(
                 uuid: uuid,
                 name: clean(fields["Name"]),
                 developer: clean(fields["Developer Name"]),
@@ -95,7 +100,15 @@ enum BTM {
                 identifier: clean(fields["Identifier"]),
                 lastUse: clean(fields["Last Use"]),
                 locationExists: exists
-            ))
+            )
+            let generation = Int(fields["Generation"] ?? "") ?? -1
+            if let existing = candidatesByUUID[uuid] {
+                if generation >= existing.generation {
+                    candidatesByUUID[uuid] = Candidate(item: item, generation: generation)
+                }
+            } else {
+                candidatesByUUID[uuid] = Candidate(item: item, generation: generation)
+            }
             fields = [:]
         }
 
@@ -120,6 +133,8 @@ enum BTM {
             if fields[key] == nil { fields[key] = val }
         }
         flush()
+
+        let items = candidatesByUUID.values.map(\.item)
 
         // 孤立在最前（最该清理），再停用、再启用；同组按类型 + 名称
         return items.sorted {

@@ -110,6 +110,7 @@ final class ScanViewModel: ObservableObject {
     @Published var isDeleting = false
     @Published var hasScanned = false
     @Published var lastFreed: Int64 = 0
+    @Published var lastFailedCount = 0
 
     init(mode: Mode) { self.mode = mode }
 
@@ -121,6 +122,7 @@ final class ScanViewModel: ObservableObject {
         guard !isScanning else { return }
         isScanning = true
         lastFreed = 0
+        lastFailedCount = 0
         let mode = self.mode
         Task.detached(priority: .utility) {
             let found: [ScanItem]
@@ -142,22 +144,26 @@ final class ScanViewModel: ObservableObject {
         }
     }
 
-    // 移到废纸篓（可恢复），返回释放字节
+    // 移到废纸篓并写入统一恢复历史，返回移动字节。
     func deleteSelected() async -> Int64 {
         guard !isDeleting else { return 0 }
         isDeleting = true
         let targets = items.filter(\.isSelected)
-        let freed = await Task.detached(priority: .userInitiated) { () -> Int64 in
-            var total: Int64 = 0
-            for item in targets {
-                if FileCleaner.moveToTrash(item.path) { total += item.size }
-            }
-            return total
+        let trashed = await Task.detached(priority: .userInitiated) { () -> [TrashedItem] in
+            targets.compactMap { FileCleaner.moveToTrash($0.path) }
         }.value
-        let deletedPaths = Set(targets.map(\.path))
+        let deletedPaths = Set(trashed.map(\.originalPath))
         items.removeAll { deletedPaths.contains($0.path) }
-        lastFreed = freed
+        lastFreed = trashed.reduce(0) { $0 + $1.size }
+        lastFailedCount = targets.count - trashed.count
         isDeleting = false
-        return freed
+
+        let title = mode == .projects ? "项目产物" : "安装包"
+        DeletionHistoryStore.shared.record(
+            title: title,
+            tasks: ["移到废纸篓"],
+            items: trashed
+        )
+        return lastFreed
     }
 }

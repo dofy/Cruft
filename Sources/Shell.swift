@@ -70,6 +70,28 @@ enum FileCleaner {
         }
     }
 
+    // 将目录的直接子项逐个移到废纸篓，保留目录本身，并返回可恢复映射。
+    static func moveContentsToTrash(of directory: String, log: @Sendable (String) -> Void) -> [TrashedItem] {
+        let fm = FileManager.default
+        let path = (directory as NSString).expandingTildeInPath
+        guard let items = try? fm.contentsOfDirectory(atPath: path) else {
+            log("跳过（不存在或无权限）: \(path)\n")
+            return []
+        }
+
+        var trashed: [TrashedItem] = []
+        for item in items {
+            let full = (path as NSString).appendingPathComponent(item)
+            if let record = moveToTrash(full) {
+                trashed.append(record)
+                log("已移到废纸篓 \(item)\n")
+            } else {
+                log("跳过 \(item)：无法移到废纸篓\n")
+            }
+        }
+        return trashed
+    }
+
     // 递归统计多个目录的占用字节（用于估算）
     static func size(of paths: [String]) -> Int64 {
         let fm = FileManager.default
@@ -93,16 +115,24 @@ enum FileCleaner {
         return total
     }
 
-    // 移到废纸篓（可恢复）；成功返回 true
-    @discardableResult
-    static func moveToTrash(_ path: String) -> Bool {
+    // 移到废纸篓并记录系统生成的实际目标路径，供历史恢复使用。
+    static func moveToTrash(_ path: String) -> TrashedItem? {
         let expanded = (path as NSString).expandingTildeInPath
-        let url = URL(fileURLWithPath: expanded)
+        guard isSafeTrashTarget(expanded) else { return nil }
+
+        let url = URL(fileURLWithPath: expanded).standardizedFileURL
+        let bytes = allocatedSize(atPath: url.path)
+        var resultingURL: NSURL?
         do {
-            try FileManager.default.trashItem(at: url, resultingItemURL: nil)
-            return true
+            try FileManager.default.trashItem(at: url, resultingItemURL: &resultingURL)
+            guard let destination = resultingURL as URL? else { return nil }
+            return TrashedItem(
+                originalPath: url.path,
+                trashedPath: destination.path,
+                size: bytes
+            )
         } catch {
-            return false
+            return nil
         }
     }
 
@@ -110,5 +140,41 @@ enum FileCleaner {
     static func freeBytes() -> Int64 {
         let attrs = try? FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory())
         return (attrs?[.systemFreeSize] as? NSNumber)?.int64Value ?? 0
+    }
+
+    static func totalBytes() -> Int64 {
+        let attrs = try? FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory())
+        return (attrs?[.systemSize] as? NSNumber)?.int64Value ?? 0
+    }
+
+    static func allocatedSize(atPath path: String) -> Int64 {
+        let fm = FileManager.default
+        var isDirectory: ObjCBool = false
+        guard fm.fileExists(atPath: path, isDirectory: &isDirectory) else { return 0 }
+        if isDirectory.boolValue {
+            return size(of: [path])
+        }
+
+        let values = try? URL(fileURLWithPath: path).resourceValues(
+            forKeys: [.totalFileAllocatedSizeKey, .fileAllocatedSizeKey, .fileSizeKey]
+        )
+        return Int64(values?.totalFileAllocatedSize ?? values?.fileAllocatedSize ?? values?.fileSize ?? 0)
+    }
+
+    static func isSafeTrashTarget(_ path: String) -> Bool {
+        let target = URL(fileURLWithPath: path).standardizedFileURL.path
+        let home = URL(fileURLWithPath: NSHomeDirectory()).standardizedFileURL.path
+
+        let blocked = [
+            "/", "/Applications", "/Library", "/System", "/Users", home,
+            "\(home)/Library", "\(home)/Applications", "\(home)/Desktop",
+            "\(home)/Documents", "\(home)/Downloads",
+        ]
+        guard !blocked.contains(target) else { return false }
+
+        if target.hasPrefix(home + "/") { return true }
+
+        // 应用清理仅允许移动 /Applications 下的完整 .app bundle。
+        return target.hasPrefix("/Applications/") && target.hasSuffix(".app")
     }
 }
