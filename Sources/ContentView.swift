@@ -92,14 +92,12 @@ struct ContentView: View {
     private var sidebar: some View {
         VStack(spacing: 0) {
             HStack(spacing: 11) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(CruftTheme.accentGradient)
-                    Image(systemName: "wind")
-                        .font(.system(size: 20, weight: .bold))
-                        .foregroundStyle(.white)
-                }
-                .frame(width: 40, height: 40)
+                // The real app icon rather than a hand-built tile: a gradient
+                // rectangle plus an SF Symbol drifted away from the icon as
+                // soon as the icon was redesigned (flat colour, heavier glyph).
+                Image(nsImage: NSApp.applicationIconImage)
+                    .resizable()
+                    .frame(width: 40, height: 40)
 
                 VStack(alignment: .leading, spacing: 1) {
                     Text("Cruft")

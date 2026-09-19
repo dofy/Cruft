@@ -5,8 +5,15 @@ import AppKit
 private let outputDirectory = URL(fileURLWithPath: CommandLine.arguments.dropFirst().first ?? "Sources/Assets.xcassets/AppIcon.appiconset")
 private let iconSizes = [16, 32, 64, 128, 256, 512, 1024]
 
-private let amber = NSColor(red: 0.96, green: 0.58, blue: 0.13, alpha: 1)
-private let coral = NSColor(red: 0.96, green: 0.35, blue: 0.22, alpha: 1)
+// Shared look across the phpz.xyz apps, measured off LinguaDock's master icon:
+// a flat coral tile inset from the canvas, a 25% corner radius, and one solid
+// white glyph. No gradient, no shadow, no rim stroke — those were what made
+// this icon read as unrelated to its siblings.
+private let tileColor = NSColor(red: 255 / 255, green: 103 / 255, blue: 77 / 255, alpha: 1)
+private let canvasInset: CGFloat = 62          // 6.1% of the canvas on every side
+private let cornerRadiusRatio: CGFloat = 0.25  // of the tile's width
+private let glyphWidthRatio: CGFloat = 0.68    // of the tile's width
+private let strokeRatio: CGFloat = 0.062       // of the tile's width
 
 private func renderIcon(size: Int) throws -> Data {
     guard let bitmap = NSBitmapImageRep(
@@ -26,8 +33,8 @@ private func renderIcon(size: Int) throws -> Data {
 
     let scale = CGFloat(size) / 1024
     let canvas = CGRect(x: 0, y: 0, width: size, height: size)
-    let tile = canvas.insetBy(dx: 72 * scale, dy: 72 * scale)
-    let cornerRadius = 205 * scale
+    let tile = canvas.insetBy(dx: canvasInset * scale, dy: canvasInset * scale)
+    let cornerRadius = tile.width * cornerRadiusRatio
     let tilePath = NSBezierPath(roundedRect: tile, xRadius: cornerRadius, yRadius: cornerRadius)
 
     NSGraphicsContext.saveGraphicsState()
@@ -39,52 +46,66 @@ private func renderIcon(size: Int) throws -> Data {
     graphicsContext.cgContext.clear(canvas)
     graphicsContext.cgContext.interpolationQuality = .high
 
-    graphicsContext.cgContext.saveGState()
-    graphicsContext.cgContext.setShadow(
-        offset: CGSize(width: 0, height: -18 * scale),
-        blur: 30 * scale,
-        color: NSColor.black.withAlphaComponent(0.20).cgColor
-    )
-    coral.setFill()
+    tileColor.setFill()
     tilePath.fill()
-    graphicsContext.cgContext.restoreGState()
 
-    let gradient = NSGradient(colors: [amber, coral])!
-    gradient.draw(in: tilePath, angle: -45)
-
-    NSColor.white.withAlphaComponent(0.16).setStroke()
-    tilePath.lineWidth = max(1, 2 * scale)
-    tilePath.stroke()
-
-    let pointSize = max(9, 400 * scale)
-    let baseConfiguration = NSImage.SymbolConfiguration(pointSize: pointSize, weight: .bold)
-    let colorConfiguration = NSImage.SymbolConfiguration(paletteColors: [.white])
-    guard let symbol = NSImage(systemSymbolName: "wind", accessibilityDescription: nil)?
-        .withSymbolConfiguration(baseConfiguration.applying(colorConfiguration)) else {
-        throw CocoaError(.fileReadCorruptFile)
-    }
-
-    let maximumSymbolSize = CGSize(width: 500 * scale, height: 390 * scale)
-    let symbolScale = min(
-        maximumSymbolSize.width / symbol.size.width,
-        maximumSymbolSize.height / symbol.size.height
-    )
-    let symbolSize = CGSize(
-        width: symbol.size.width * symbolScale,
-        height: symbol.size.height * symbolScale
-    )
-    let symbolRect = CGRect(
-        x: canvas.midX - symbolSize.width / 2,
-        y: canvas.midY - symbolSize.height / 2 + 8 * scale,
-        width: symbolSize.width,
-        height: symbolSize.height
-    )
-    symbol.draw(in: symbolRect, from: .zero, operation: .sourceOver, fraction: 1)
+    NSColor.white.setStroke()
+    let glyphWidth = tile.width * glyphWidthRatio
+    let glyphHeight = glyphWidth * 0.72
+    let glyph = windPath(in: CGRect(
+        x: tile.midX - glyphWidth / 2,
+        y: tile.midY - glyphHeight / 2,
+        width: glyphWidth, height: glyphHeight
+    ), lineWidth: tile.width * strokeRatio)
+    glyph.stroke()
 
     guard let data = bitmap.representation(using: .png, properties: [:]) else {
         throw CocoaError(.fileWriteUnknown)
     }
     return data
+}
+
+/// Three wind streaks, each ending in a hooked curl.
+///
+/// Drawn by hand rather than using the `wind` SF Symbol: even at `.black` that
+/// symbol's strokes are far lighter than the chunky glyphs the sibling icons
+/// use, so it read as thin and small next to them.
+private func windPath(in rect: CGRect, lineWidth: CGFloat) -> NSBezierPath {
+    let path = NSBezierPath()
+    path.lineWidth = lineWidth
+    path.lineCapStyle = .round
+    path.lineJoinStyle = .round
+
+    let radius = rect.height * 0.15
+
+    // Top streak: shorter, hooks upward.
+    let topY = rect.maxY - radius * 2
+    path.move(to: CGPoint(x: rect.minX + rect.width * 0.06, y: topY))
+    path.line(to: CGPoint(x: rect.minX + rect.width * 0.58, y: topY))
+    path.appendArc(
+        withCenter: CGPoint(x: rect.minX + rect.width * 0.58, y: topY + radius),
+        radius: radius, startAngle: -90, endAngle: 170, clockwise: false
+    )
+
+    // Middle streak: the longest, hooks downward at the far right.
+    let midY = rect.midY
+    path.move(to: CGPoint(x: rect.minX, y: midY))
+    path.line(to: CGPoint(x: rect.maxX - radius, y: midY))
+    path.appendArc(
+        withCenter: CGPoint(x: rect.maxX - radius, y: midY - radius),
+        radius: radius, startAngle: 90, endAngle: -170, clockwise: true
+    )
+
+    // Bottom streak: hooks downward, shortest of the three.
+    let bottomY = rect.minY + radius * 2
+    path.move(to: CGPoint(x: rect.minX + rect.width * 0.04, y: bottomY))
+    path.line(to: CGPoint(x: rect.minX + rect.width * 0.46, y: bottomY))
+    path.appendArc(
+        withCenter: CGPoint(x: rect.minX + rect.width * 0.46, y: bottomY - radius),
+        radius: radius, startAngle: 90, endAngle: -170, clockwise: true
+    )
+
+    return path
 }
 
 try FileManager.default.createDirectory(at: outputDirectory, withIntermediateDirectories: true)
