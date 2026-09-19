@@ -144,6 +144,19 @@ Or from the command line:
 xcodebuild -project Cruft.xcodeproj -scheme Cruft -configuration Release build
 ```
 
+To install the build into `/Applications`:
+
+```bash
+./Scripts/install-local.sh
+```
+
+Use the script rather than copying the build yourself. `project.yml` signs
+ad-hoc, and TCC can only pin an ad-hoc signature to the binary's cdhash, so a
+Full Disk Access grant silently stops applying as soon as the app is rebuilt —
+the toggle stays on and the app still reports no file access. The script signs
+with a self-signed `Cruft Local Development` certificate (created in the login
+keychain on first run), which TCC pins instead, so the grant survives rebuilds.
+
 ## Project layout
 
 ```
