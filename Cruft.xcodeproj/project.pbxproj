@@ -315,7 +315,7 @@
 					"@loader_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				PRODUCT_BUNDLE_IDENTIFIER = org.phpz.app.mac.CruftTests;
+				PRODUCT_BUNDLE_IDENTIFIER = xyz.phpz.app.CruftTests;
 				SDKROOT = macosx;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Cruft.app/Contents/MacOS/Cruft";
 			};
@@ -396,7 +396,7 @@
 					"@loader_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				PRODUCT_BUNDLE_IDENTIFIER = org.phpz.app.mac.CruftTests;
+				PRODUCT_BUNDLE_IDENTIFIER = xyz.phpz.app.CruftTests;
 				SDKROOT = macosx;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Cruft.app/Contents/MacOS/Cruft";
 			};
