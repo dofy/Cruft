@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Cruft is a native macOS cleanup tool for developer machines. It measures Xcode and toolchain caches, stale build products, app leftovers and the Trash, then moves what you confirm — to the Trash, with a restore point."
+    />
+    <meta name="theme-color" content="#fffdfc" />
+    <meta property="og:title" content="Cruft — Measure, confirm, reclaim" />
+    <meta
+      property="og:description"
+      content="A native macOS cleanup tool that shows its work and sends deletions to the Trash, never straight to /dev/null."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/app-icon.png" />
+    <link rel="icon" type="image/png" href="/app-icon.png" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="alternate" hreflang="en" href="https://cruft.phpz.org/" />
+    <link rel="alternate" hreflang="zh-Hans" href="https://cruft.phpz.org/zh-Hans/" />
+    <link rel="alternate" hreflang="zh-Hant" href="https://cruft.phpz.org/zh-Hant/" />
+    <link rel="alternate" hreflang="x-default" href="https://cruft.phpz.org/" />
+    <title>Cruft — Measure, confirm, reclaim</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Cruft home">
+        <img src="/app-icon.png" width="34" height="34" alt="" />
+        <span>Cruft</span>
+      </a>
+      <nav aria-label="Main navigation">
+        <a href="#workflow">How it works</a>
+        <a href="#targets">What it cleans</a>
+        <a href="#safety">Safety</a>
+      </nav>
+      <div class="header-end">
+        <nav class="lang-switch" aria-label="Language">
+          <a href="/" hreflang="en" aria-current="page">EN</a>
+          <a href="/zh-Hans/" hreflang="zh-Hans" lang="zh-Hans">简</a>
+          <a href="/zh-Hant/" hreflang="zh-Hant" lang="zh-Hant">繁</a>
+        </nav>
+        <a
+          class="header-link"
+          href="https://github.com/dofy/Cruft"
+          target="_blank"
+          rel="noreferrer"
+        >
+          GitHub <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero" id="top">
+        <div class="hero-copy">
+          <p class="product-note">A native macOS cleanup tool</p>
+          <h1><span>Measure,</span><span>confirm,</span><span>reclaim.</span></h1>
+          <p class="hero-description">
+            A development machine accumulates tens of gigabytes nobody asked for
+            — build caches, archives, package stores, leftovers from apps you
+            deleted months ago. Cruft measures all of it first, shows you the
+            exact paths, and then moves only what you tick.
+          </p>
+          <div class="hero-actions">
+            <a
+              class="button button-primary"
+              href="https://github.com/dofy/Cruft"
+              target="_blank"
+              rel="noreferrer"
+              >View the project on GitHub</a
+            >
+            <a class="button button-secondary" href="#start">How to install it</a>
+          </div>
+          <p class="hero-meta">macOS 14+ · SwiftUI · MIT License</p>
+        </div>
+
+        <div class="hero-demo" aria-label="A demonstration of a cleanup run">
+          <div class="task-pane mock-pane">
+            <div class="mock-toolbar">
+              <span class="traffic-lights" aria-hidden="true">
+                <i></i><i></i><i></i>
+              </span>
+              <span>Clean</span>
+            </div>
+            <ul class="task-list">
+              <li>
+                <span class="task-check is-on" aria-hidden="true"></span>
+                <span class="task-name">Clean up Xcode</span>
+                <span class="badge-chip">8.4 GB</span>
+              </li>
+              <li>
+                <span class="task-check is-on" aria-hidden="true"></span>
+                <span class="task-name">Clean the pnpm store</span>
+                <span class="badge-chip">3.1 GB</span>
+              </li>
+              <li>
+                <span class="task-check is-on" aria-hidden="true"></span>
+                <span class="task-name">Clean up Homebrew</span>
+                <span class="badge-chip">640 MB</span>
+              </li>
+              <li class="is-off">
+                <span class="task-check" aria-hidden="true"></span>
+                <span class="task-name">Update App Store apps</span>
+                <span class="task-note">mas isn’t installed</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="reclaim-pane mock-pane">
+            <div class="reclaim-heading">
+              <span class="mini-brand">
+                <img src="/app-icon.png" width="28" height="28" alt="" />
+                Cruft
+              </span>
+              <span class="badge-chip">Moved to the Trash</span>
+            </div>
+            <p class="reclaim-figure">
+              <strong>12.1 GB</strong>
+              reclaimed across 3 tasks
+            </p>
+            <div class="reclaim-bar" aria-hidden="true"><span></span></div>
+            <div class="reclaim-footer">
+              <span>238 GB free of 494 GB</span>
+              <span class="reclaim-control">Restore history</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="workflow section" id="workflow">
+        <div class="section-heading">
+          <h2>Nothing moves until you say so</h2>
+          <p>
+            No "one-click clean" button, no progress bar deciding on your behalf
+            what was safe to delete.
+          </p>
+        </div>
+        <ol class="workflow-rail">
+          <li>
+            <span class="step-mark">Measure</span>
+            <div>
+              <h3>See what each target actually costs</h3>
+              <p>
+                Every cleanable directory is sized in the background before you
+                touch anything, and re-measured after a run. Tasks whose CLI tool
+                is missing grey out; a toolchain's row only appears if that
+                toolchain's cache really exists on this machine.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span class="step-mark">Confirm</span>
+            <div>
+              <h3>Read the exact paths, then tick</h3>
+              <p>
+                An ⓘ button on every row lists the precise paths and commands that
+                task will touch. The confirmation sheet spells out which of your
+                selections can be undone and which cannot.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span class="step-mark">Reclaim</span>
+            <div>
+              <h3>Into the Trash, with a way back</h3>
+              <p>
+                File-based cleanups go to the Trash and leave a restore point. The
+                footer reports what was actually freed, and a collapsible console
+                streams the run live.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="duo section" id="targets">
+        <div class="duo-statement">
+          <p>The biggest directories are the ones you never look at.</p>
+          <h2>Twenty-two targets, all of them rebuildable.</h2>
+        </div>
+        <div class="duo-options">
+          <article>
+            <span class="option-symbol" aria-hidden="true">◎</span>
+            <h3>Developer caches</h3>
+            <p>
+              Xcode DerivedData, Archives, Products and old iOS DeviceSupport;
+              CocoaPods; the npm, yarn, pip, SwiftPM and Gradle caches; the pnpm
+              store; Cargo's registry; Go's build and module caches; the Maven
+              repository. Plus scanners for stale <em>node_modules</em> trees
+              and the installers still sitting in Downloads.
+            </p>
+            <code>~/Library/Developer/Xcode/DerivedData</code>
+          </article>
+          <article>
+            <span class="option-symbol" aria-hidden="true">◍</span>
+            <h3>System and leftovers</h3>
+            <p>
+              User-level caches and logs, Homebrew and Ruby gem cleanup, Docker
+              dangling images, build cache, stopped containers and unused volumes,
+              the Trash itself — and an app cleanup pane that finds what an
+              uninstalled app left behind, matched by bundle ID.
+            </p>
+            <code>~/Library/Caches · ~/Library/Logs · ~/.Trash</code>
+          </article>
+        </div>
+      </section>
+
+      <section class="details section">
+        <div class="detail-intro">
+          <h2>A maintenance console, not a magic button.</h2>
+          <p>
+            Everything it is about to do is visible before it does it, and
+            everything it did is on the record afterwards.
+          </p>
+        </div>
+        <div class="detail-list">
+          <div>
+            <h3>Size estimates</h3>
+            <p>
+              Per-task disk usage, computed off the main thread and refreshed
+              after every run so the numbers never go stale.
+            </p>
+          </div>
+          <div>
+            <h3>Per-task details</h3>
+            <p>
+              A popover on each row naming the exact paths or commands. No task
+              does anything the popover didn't tell you about.
+            </p>
+          </div>
+          <div>
+            <h3>Live run log</h3>
+            <p>
+              A console pane, collapsed by default and auto-expanding during a
+              run, streaming each file as it moves.
+            </p>
+          </div>
+          <div>
+            <h3>Restore history</h3>
+            <p>
+              Up to twenty batches of original-to-Trash path mappings, restorable
+              in one click while the files are still in the Trash.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="privacy section" id="safety">
+        <div class="privacy-mark" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <div>
+          <h2>It moves files to the Trash. It does not delete them.</h2>
+          <p>
+            File-based cleanups go through the Trash and record a restore point,
+            so a mistake costs you one click, not an afternoon. Cruft installs no
+            privileged helper — a protected app is reported as a failure rather
+            than escalated around. Targets stay in locations you own, never
+            <code>/Library</code> or <code>/System</code>. Command tasks, emptying
+            the Trash and Docker prune are the exceptions, and the app says so
+            before you run them.
+          </p>
+        </div>
+      </section>
+
+      <section class="start section" id="start">
+        <div>
+          <h2>Build it, then grant it access.</h2>
+          <p>
+            Open source, no installer, no telemetry. Full Disk Access is the one
+            permission it asks for, and it scans nothing until that check passes.
+          </p>
+        </div>
+        <div class="terminal" aria-label="Install commands">
+          <div class="terminal-bar"><span></span><span></span><span></span></div>
+          <pre><code>git clone https://github.com/dofy/Cruft.git
+cd Cruft
+xcodegen generate
+./Scripts/install-local.sh</code></pre>
+        </div>
+        <a
+          class="button button-primary"
+          href="https://github.com/dofy/Cruft#build--run"
+          target="_blank"
+          rel="noreferrer"
+          >Read the full install notes</a
+        >
+      </section>
+    </main>
+
+    <footer>
+      <div class="brand footer-brand">
+        <img src="/app-icon.png" width="30" height="30" alt="" />
+        <span>Cruft</span>
+      </div>
+      <p>Made for machines that build things all day.</p>
+      <div class="footer-links">
+        <a href="https://github.com/dofy/Cruft">GitHub</a>
+        <a href="https://github.com/dofy/Cruft/issues">Issues</a>
+        <a href="https://github.com/dofy/Cruft/blob/main/LICENSE">MIT License</a>
+      </div>
+      <p class="copyright">© <span id="year">2026</span> Cruft</p>
+    </footer>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

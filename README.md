@@ -2,6 +2,8 @@
 
 **English** · [简体中文](README.zh-Hans.md) · [繁體中文](README.zh-Hant.md)
 
+[**cruft.phpz.org** ↗](https://cruft.phpz.org)
+
 A small native **macOS app** that clears the *cruft* a developer machine piles
 up — Xcode DerivedData, toolchain caches (npm/pnpm/yarn, Cargo, Go, Gradle,
 Maven, pip, SwiftPM), system caches, logs, Homebrew/CocoaPods/gem leftovers, and
@@ -209,6 +211,7 @@ Sources/
 └── Assets.xcassets/        # app icon
 Tests/CruftTests.swift      # matching, path guards, and restore tests
 Scripts/check-localization.sh  # String Catalog gate (also runs in CI)
+website/                    # cruft.phpz.org — trilingual Vite site on Cloudflare
 project.yml                 # xcodegen spec
 ```
 

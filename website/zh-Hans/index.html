@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Cruft 是一款面向开发机的原生 macOS 清理工具。先估算 Xcode 与各工具链缓存、长期未动的构建产物、应用残留和废纸篓，再只处理你勾选的部分——而且是移到废纸篓、留下恢复点。"
+    />
+    <meta name="theme-color" content="#fffdfc" />
+    <meta property="og:title" content="Cruft — 先估算，再确认，然后回收" />
+    <meta
+      property="og:description"
+      content="一款把过程摆给你看的原生 macOS 清理工具；删除一律走废纸篓，不直接抹掉。"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/app-icon.png" />
+    <link rel="icon" type="image/png" href="/app-icon.png" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="alternate" hreflang="en" href="https://cruft.phpz.org/" />
+    <link rel="alternate" hreflang="zh-Hans" href="https://cruft.phpz.org/zh-Hans/" />
+    <link rel="alternate" hreflang="zh-Hant" href="https://cruft.phpz.org/zh-Hant/" />
+    <link rel="alternate" hreflang="x-default" href="https://cruft.phpz.org/" />
+    <title>Cruft — 先估算，再确认，然后回收</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到主要内容</a>
+
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Cruft 首页">
+        <img src="/app-icon.png" width="34" height="34" alt="" />
+        <span>Cruft</span>
+      </a>
+      <nav aria-label="主要导航">
+        <a href="#workflow">使用方式</a>
+        <a href="#targets">清理什么</a>
+        <a href="#safety">安全性</a>
+      </nav>
+      <div class="header-end">
+        <nav class="lang-switch" aria-label="语言">
+          <a href="/" hreflang="en" lang="en">EN</a>
+          <a href="/zh-Hans/" hreflang="zh-Hans" aria-current="page">简</a>
+          <a href="/zh-Hant/" hreflang="zh-Hant" lang="zh-Hant">繁</a>
+        </nav>
+        <a
+          class="header-link"
+          href="https://github.com/dofy/Cruft"
+          target="_blank"
+          rel="noreferrer"
+        >
+          GitHub <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero" id="top">
+        <div class="hero-copy">
+          <p class="product-note">原生 macOS 清理工具</p>
+          <h1><span>先估算，</span><span>再确认，</span><span>然后回收。</span></h1>
+          <p class="hero-description">
+            一台开发机会攒下几十 GB 没人要的东西——构建缓存、归档、包管理器的
+            store、几个月前删掉的应用留下的残留。Cruft 先把这些全都估算一遍，
+            把具体路径摆给你看，然后只动你勾选的那些。
+          </p>
+          <div class="hero-actions">
+            <a
+              class="button button-primary"
+              href="https://github.com/dofy/Cruft"
+              target="_blank"
+              rel="noreferrer"
+              >在 GitHub 查看项目</a
+            >
+            <a class="button button-secondary" href="#start">查看安装方式</a>
+          </div>
+          <p class="hero-meta">macOS 14+ · SwiftUI · MIT License</p>
+        </div>
+
+        <div class="hero-demo" aria-label="一次清理的流程演示">
+          <div class="task-pane mock-pane">
+            <div class="mock-toolbar">
+              <span class="traffic-lights" aria-hidden="true">
+                <i></i><i></i><i></i>
+              </span>
+              <span>清理</span>
+            </div>
+            <ul class="task-list">
+              <li>
+                <span class="task-check is-on" aria-hidden="true"></span>
+                <span class="task-name">清理 Xcode</span>
+                <span class="badge-chip">8.4 GB</span>
+              </li>
+              <li>
+                <span class="task-check is-on" aria-hidden="true"></span>
+                <span class="task-name">清理 pnpm store</span>
+                <span class="badge-chip">3.1 GB</span>
+              </li>
+              <li>
+                <span class="task-check is-on" aria-hidden="true"></span>
+                <span class="task-name">清理 Homebrew</span>
+                <span class="badge-chip">640 MB</span>
+              </li>
+              <li class="is-off">
+                <span class="task-check" aria-hidden="true"></span>
+                <span class="task-name">更新 App Store 应用</span>
+                <span class="task-note">未安装 mas</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="reclaim-pane mock-pane">
+            <div class="reclaim-heading">
+              <span class="mini-brand">
+                <img src="/app-icon.png" width="28" height="28" alt="" />
+                Cruft
+              </span>
+              <span class="badge-chip">已移到废纸篓</span>
+            </div>
+            <p class="reclaim-figure">
+              <strong>12.1 GB</strong>
+              来自 3 项任务
+            </p>
+            <div class="reclaim-bar" aria-hidden="true"><span></span></div>
+            <div class="reclaim-footer">
+              <span>可用 238 GB / 共 494 GB</span>
+              <span class="reclaim-control">恢复历史</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="workflow section" id="workflow">
+        <div class="section-heading">
+          <h2>你不点，什么都不动</h2>
+          <p>没有「一键清理」按钮，也没有哪个进度条替你决定什么可以删。</p>
+        </div>
+        <ol class="workflow-rail">
+          <li>
+            <span class="step-mark">估算</span>
+            <div>
+              <h3>先看清每一项到底占多少</h3>
+              <p>
+                所有可清理目录都在后台先估一遍，跑完再重新估。缺命令行工具的任务
+                会变灰；某个工具链的行只在它的缓存目录真的存在时才出现。
+              </p>
+            </div>
+          </li>
+          <li>
+            <span class="step-mark">确认</span>
+            <div>
+              <h3>读清楚具体路径，再勾</h3>
+              <p>
+                每行的 ⓘ 按钮会列出这个任务要碰的确切路径和命令。
+                确认弹窗会明确写出你这次勾的哪些可恢复、哪些不可恢复。
+              </p>
+            </div>
+          </li>
+          <li>
+            <span class="step-mark">回收</span>
+            <div>
+              <h3>进废纸篓，留一条退路</h3>
+              <p>
+                文件型清理会进废纸篓并留下恢复点。页脚报告实际释放了多少，
+                可折叠的控制台把整次运行实时打出来。
+              </p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="duo section" id="targets">
+        <div class="duo-statement">
+          <p>占得最多的目录，恰好是你从来不看的那几个。</p>
+          <h2>二十二个目标，全都是可重建的。</h2>
+        </div>
+        <div class="duo-options">
+          <article>
+            <span class="option-symbol" aria-hidden="true">◎</span>
+            <h3>开发缓存</h3>
+            <p>
+              Xcode 的 DerivedData、Archives、Products 和旧的 iOS DeviceSupport；
+              CocoaPods；npm、yarn、pip、SwiftPM、Gradle 缓存；pnpm store；
+              Cargo 的 registry；Go 的构建与模块缓存；Maven 本地仓库。
+              另外两个扫描器专门找长期未动的 <em>node_modules</em> 目录，
+              以及还堆在下载目录里的安装包。
+            </p>
+            <code>~/Library/Developer/Xcode/DerivedData</code>
+          </article>
+          <article>
+            <span class="option-symbol" aria-hidden="true">◍</span>
+            <h3>系统与残留</h3>
+            <p>
+              用户级缓存与日志、Homebrew 与 Ruby gem 清理、Docker 的悬挂 image、
+              构建缓存、已停止的容器和未挂载的 volume、废纸篓本身——
+              还有一个应用清理页，按 Bundle ID 找出卸载掉的应用留下了什么。
+            </p>
+            <code>~/Library/Caches · ~/Library/Logs · ~/.Trash</code>
+          </article>
+        </div>
+      </section>
+
+      <section class="details section">
+        <div class="detail-intro">
+          <h2>一个维护控制台，不是一个魔法按钮。</h2>
+          <p>它要做的每件事，做之前都看得见；做过的每件事，做完都有记录。</p>
+        </div>
+        <div class="detail-list">
+          <div>
+            <h3>体积估算</h3>
+            <p>
+              逐项显示当前占用，在主线程之外计算，每次跑完重新刷新，
+              所以数字不会过期。
+            </p>
+          </div>
+          <div>
+            <h3>逐项详情</h3>
+            <p>
+              每行一个弹出层，写明确切的路径或命令。任务不会做任何
+              弹出层里没告诉你的事。
+            </p>
+          </div>
+          <div>
+            <h3>实时运行日志</h3>
+            <p>
+              控制台面板默认折叠、运行时自动展开，每移动一个文件就打一行。
+            </p>
+          </div>
+          <div>
+            <h3>恢复历史</h3>
+            <p>
+              最多保留二十批「原路径 → 废纸篓路径」的映射，
+              文件还在废纸篓里时一键恢复。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="privacy section" id="safety">
+        <div class="privacy-mark" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <div>
+          <h2>它把文件移到废纸篓，不是删掉。</h2>
+          <p>
+            文件型清理一律经废纸篓并写入恢复点，所以手一抖的代价是点一下，
+            而不是一个下午。Cruft 不安装任何特权 helper——受保护的应用会被报为
+            失败，而不是绕过去提权。清理目标只在你自己拥有的位置，绝不碰
+            <code>/Library</code> 或 <code>/System</code>。命令型任务、清空废纸篓
+            和 Docker prune 是例外，运行前 App 会明说。
+          </p>
+        </div>
+      </section>
+
+      <section class="start section" id="start">
+        <div>
+          <h2>构建出来，然后给它授权。</h2>
+          <p>
+            开源、无安装器、无遥测。它只要一个权限——完全磁盘访问，
+            而且这项检查通过之前它什么都不扫。
+          </p>
+        </div>
+        <div class="terminal" aria-label="安装命令">
+          <div class="terminal-bar"><span></span><span></span><span></span></div>
+          <pre><code>git clone https://github.com/dofy/Cruft.git
+cd Cruft
+xcodegen generate
+./Scripts/install-local.sh</code></pre>
+        </div>
+        <a
+          class="button button-primary"
+          href="https://github.com/dofy/Cruft/blob/main/README.zh-Hans.md#构建与运行"
+          target="_blank"
+          rel="noreferrer"
+          >打开完整安装说明</a
+        >
+      </section>
+    </main>
+
+    <footer>
+      <div class="brand footer-brand">
+        <img src="/app-icon.png" width="30" height="30" alt="" />
+        <span>Cruft</span>
+      </div>
+      <p>为整天在构建东西的机器而做。</p>
+      <div class="footer-links">
+        <a href="https://github.com/dofy/Cruft">GitHub</a>
+        <a href="https://github.com/dofy/Cruft/issues">问题反馈</a>
+        <a href="https://github.com/dofy/Cruft/blob/main/LICENSE">MIT License</a>
+      </div>
+      <p class="copyright">© <span id="year">2026</span> Cruft</p>
+    </footer>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

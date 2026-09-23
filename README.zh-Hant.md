@@ -2,6 +2,8 @@
 
 [English](README.md) · [简体中文](README.zh-Hans.md) · **繁體中文**
 
+[**cruft.phpz.org** ↗](https://cruft.phpz.org)
+
 一個小小的原生 **macOS App**，清掉開發機上堆出來的那些 *cruft* —— Xcode DerivedData、
 各工具鏈快取（npm/pnpm/yarn、Cargo、Go、Gradle、Maven、pip、SwiftPM）、系統快取、記錄、
 Homebrew/CocoaPods/gem 殘留，以及垃圾桶 —— 再加兩個掃描器：長期沒動的專案建置產物，以及
@@ -180,6 +182,7 @@ Sources/
 └── Assets.xcassets/        # App 圖像
 Tests/CruftTests.swift      # 比對、路徑守衛與還原測試
 Scripts/check-localization.sh  # 字串目錄門禁（CI 也會跑）
+website/                    # cruft.phpz.org —— 三語 Vite 網站，部署在 Cloudflare
 project.yml                 # xcodegen 規格
 ```
 
