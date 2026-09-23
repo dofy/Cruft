@@ -132,9 +132,16 @@ nav a:hover,
 .header-link {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 7px;
   font-size: 14px;
   font-weight: 650;
+}
+
+/* GitHub 标记，替掉原来那个 ↗ 箭头。fill 用 currentColor，所以 hover 时
+   图标和文字一起变珊瑚色。 */
+.header-link-mark {
+  flex: none;
+  display: block;
 }
 
 .hero,
