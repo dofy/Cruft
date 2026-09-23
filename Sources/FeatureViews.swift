@@ -84,7 +84,7 @@ struct CleanPane: View {
                         .rotationEffect(.degrees(showLog ? 90 : 0))
                     Text("运行日志")
                     if !showLog && !vm.log.isEmpty {
-                        Circle().fill(CruftTheme.amber).frame(width: 6, height: 6)
+                        Circle().fill(CruftTheme.coral).frame(width: 6, height: 6)
                     }
                     Spacer()
                 }

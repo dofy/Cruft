@@ -13,7 +13,7 @@ struct TaskRowView: View {
                 RoundedRectangle(cornerRadius: 8)
                     .fill(Color.primary.opacity(0.055))
                 Image(systemName: item.kind.icon)
-                    .foregroundStyle(item.isAvailable ? CruftTheme.amber : Color.secondary)
+                    .foregroundStyle(item.isAvailable ? CruftTheme.coral : Color.secondary)
             }
             .frame(width: 32, height: 32)
 
@@ -74,7 +74,7 @@ struct ScanRowView: View {
             HStack(spacing: 12) {
                 Image(systemName: item.isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.title3)
-                    .foregroundStyle(item.isSelected ? CruftTheme.amber : Color.secondary)
+                    .foregroundStyle(item.isSelected ? CruftTheme.coral : Color.secondary)
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text(item.title)
@@ -123,10 +123,10 @@ struct ApplicationRow: View {
                     if app.isChromePWA {
                         Text(app.versionLabel)
                             .font(.caption.weight(.semibold))
-                            .foregroundStyle(CruftTheme.amber)
+                            .foregroundStyle(CruftTheme.coral)
                             .padding(.horizontal, 7)
                             .padding(.vertical, 2)
-                            .background(CruftTheme.amber.opacity(0.12), in: Capsule())
+                            .background(CruftTheme.coral.opacity(0.12), in: Capsule())
                     } else if app.displayVersion != nil {
                         Text(app.versionLabel)
                             .font(.caption)
@@ -153,7 +153,7 @@ struct AppCleanupRow: View {
             HStack(spacing: 12) {
                 Image(systemName: item.isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.title3)
-                    .foregroundStyle(item.isSelected ? CruftTheme.amber : Color.secondary)
+                    .foregroundStyle(item.isSelected ? CruftTheme.coral : Color.secondary)
 
                 if item.isApplication {
                     AppIconView(path: item.path, size: 36)
@@ -206,7 +206,7 @@ struct BTMRowView: View {
                     RoundedRectangle(cornerRadius: 8)
                         .fill(Color.primary.opacity(0.055))
                     Image(systemName: item.icon)
-                        .foregroundStyle(item.isEnabled ? CruftTheme.amber : Color.secondary)
+                        .foregroundStyle(item.isEnabled ? CruftTheme.coral : Color.secondary)
                 }
                 .frame(width: 34, height: 34)
 

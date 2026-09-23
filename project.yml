@@ -25,6 +25,9 @@ targets:
         PRODUCT_NAME: Cruft
         PRODUCT_BUNDLE_IDENTIFIER: xyz.phpz.app.cruft
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        # 侧边栏选中高亮走系统强调色，SwiftUI 的 .tint 管不到它。不设这个
+        # 资源目录条目，高亮就是系统默认的蓝，和一身珊瑚橙的界面对不上。
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         INFOPLIST_KEY_CFBundleDisplayName: Cruft
         INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.utilities"
         INFOPLIST_KEY_LSMinimumSystemVersion: "14.0"

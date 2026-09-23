@@ -71,7 +71,7 @@ struct FolderAccessBanner: View {
             if !isChecking {
                 Button("开启访问", action: showDetails)
                     .buttonStyle(.borderedProminent)
-                    .tint(CruftTheme.amber)
+                    .tint(CruftTheme.coral)
             }
         }
         .padding(.horizontal, 18)

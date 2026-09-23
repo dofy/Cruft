@@ -2,13 +2,22 @@ import AppKit
 import SwiftUI
 
 enum CruftTheme {
-    static let amber = Color(red: 0.96, green: 0.58, blue: 0.13)
-    /// #FF674D — the same flat coral the app icon uses, shared with the sibling
-    /// apps. Kept in sync with `tileColor` in Scripts/generate_app_icon.swift.
+    /// #FF674D — the app's only accent colour: the same flat coral the app icon
+    /// uses, shared with the sibling apps, and the colour the sidebar selection
+    /// picks up through the AccentColor asset. Kept in sync with `tileColor` in
+    /// Scripts/generate_app_icon.swift.
+    ///
+    /// There used to be a second accent (amber #F59421) on the toggles, row
+    /// icons and badges. Once the sidebar started drawing its selection in
+    /// coral, the two oranges read as an accident rather than a pair, so
+    /// everything accent-coloured now uses this one.
     static let coral = Color(red: 255 / 255, green: 103 / 255, blue: 77 / 255)
+    /// #FF965C — the light end of the accent gradient. A brightened coral, not
+    /// a second hue, so the gradient stays one colour family.
+    static let coralLight = Color(red: 255 / 255, green: 150 / 255, blue: 92 / 255)
     static let ink = Color(red: 0.13, green: 0.15, blue: 0.18)
     static let accentGradient = LinearGradient(
-        colors: [amber, coral],
+        colors: [coralLight, coral],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )

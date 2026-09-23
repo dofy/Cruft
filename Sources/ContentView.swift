@@ -37,6 +37,32 @@ enum Pane: String, CaseIterable, Identifiable {
     static let system: [Pane] = [.background, .history]
 }
 
+/// Sidebar row icon.
+///
+/// The focused selection now fills the row with the app accent (coral), so a
+/// coral glyph on top of it disappears; white reads cleanly instead. An
+/// unfocused selection keeps its light grey fill, where white would vanish
+/// just as badly, so only `.increased` prominence — a focused selection —
+/// switches to white. Reading `backgroundProminence` needs its own view: in a
+/// method on ContentView it resolves against the list, not the row.
+private struct SidebarIcon: View {
+    let name: String
+    let isSelected: Bool
+
+    @Environment(\.backgroundProminence) private var prominence
+
+    var body: some View {
+        Image(systemName: name)
+            .foregroundStyle(iconColor)
+            .frame(width: 20)
+    }
+
+    private var iconColor: Color {
+        if prominence == .increased { return .white }
+        return isSelected ? CruftTheme.coral : .secondary
+    }
+}
+
 struct ContentView: View {
     @StateObject private var folderAccess = FolderAccessManager.shared
     @StateObject private var cleanerVM = CleanerViewModel()
@@ -72,7 +98,7 @@ struct ContentView: View {
             }
         }
         .navigationSplitViewStyle(.balanced)
-        .tint(CruftTheme.amber)
+        .tint(CruftTheme.coral)
         .sheet(isPresented: $showFolderAccess) {
             FolderAccessSheet(manager: folderAccess)
         }
@@ -124,9 +150,7 @@ struct ContentView: View {
                 Section("系统") {
                     ForEach(Pane.system) { item in
                         HStack {
-                            Image(systemName: item.icon)
-                                .foregroundStyle(pane == item ? CruftTheme.coral : Color.secondary)
-                                .frame(width: 20)
+                            SidebarIcon(name: item.icon, isSelected: pane == item)
                             Text(item.title)
                             if item == .history, !history.batches.isEmpty {
                                 Spacer()
@@ -151,9 +175,7 @@ struct ContentView: View {
 
     private func sidebarLabel(_ item: Pane) -> some View {
         HStack(spacing: 8) {
-            Image(systemName: item.icon)
-                .foregroundStyle(pane == item ? CruftTheme.coral : Color.secondary)
-                .frame(width: 20)
+            SidebarIcon(name: item.icon, isSelected: pane == item)
             Text(item.title)
         }
     }
