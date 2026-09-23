@@ -32,10 +32,10 @@ targets:
         INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.utilities"
         INFOPLIST_KEY_LSMinimumSystemVersion: "14.0"
         INFOPLIST_KEY_NSHumanReadableCopyright: "MIT License"
-        INFOPLIST_KEY_NSDesktopFolderUsageDescription: "Cruft 仅在你主动扫描时读取桌面上的安装包。"
-        INFOPLIST_KEY_NSDocumentsFolderUsageDescription: "Cruft 仅在你主动选择项目扫描时读取文稿目录。"
-        INFOPLIST_KEY_NSDownloadsFolderUsageDescription: "Cruft 仅在你主动扫描时读取下载目录中的安装包。"
-        INFOPLIST_KEY_NSSystemAdministrationUsageDescription: "Cruft 需要完全磁盘访问来检查开发缓存、日志、应用残留和废纸篓。"
+        INFOPLIST_KEY_NSDesktopFolderUsageDescription: "Cruft reads installers on the Desktop only when you start a scan yourself."
+        INFOPLIST_KEY_NSDocumentsFolderUsageDescription: "Cruft reads your Documents folder only when you start a project scan yourself."
+        INFOPLIST_KEY_NSDownloadsFolderUsageDescription: "Cruft reads installers in your Downloads folder only when you start a scan yourself."
+        INFOPLIST_KEY_NSSystemAdministrationUsageDescription: "Cruft needs Full Disk Access to inspect development caches, logs, app leftovers and the Trash."
         MACOSX_DEPLOYMENT_TARGET: "14.0"
   CruftTests:
     type: bundle.unit-test

@@ -13,12 +13,18 @@ enum Pane: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .tasks: return "清理"
-        case .projects: return "项目产物"
-        case .installers: return "安装包"
-        case .applications: return "应用清理"
-        case .background: return "背景 App"
-        case .history: return "恢复历史"
+        case .tasks:
+            return String(localized: "clean.title", defaultValue: "Clean")
+        case .projects:
+            return String(localized: "projects.title", defaultValue: "Build products")
+        case .installers:
+            return String(localized: "installers.title", defaultValue: "Installers")
+        case .applications:
+            return String(localized: "apps.title", defaultValue: "App cleanup")
+        case .background:
+            return String(localized: "btm.title", defaultValue: "Background apps")
+        case .history:
+            return String(localized: "history.title", defaultValue: "Restore history")
         }
     }
 
@@ -126,9 +132,9 @@ struct ContentView: View {
                     .frame(width: 40, height: 40)
 
                 VStack(alignment: .leading, spacing: 1) {
-                    Text("Cruft")
+                    Text(verbatim: "Cruft")
                         .font(.system(.title3, design: .rounded, weight: .bold))
-                    Text("DEV HYGIENE")
+                    Text(verbatim: "DEV HYGIENE")
                         .font(.system(size: 9, weight: .semibold, design: .monospaced))
                         .tracking(1.4)
                         .foregroundStyle(.secondary)
@@ -140,21 +146,21 @@ struct ContentView: View {
             .padding(.bottom, 12)
 
             List(selection: $pane) {
-                Section("空间维护") {
+                Section(String(localized: "sidebar.section.space", defaultValue: "Space")) {
                     ForEach(Pane.cleanup) { item in
                         sidebarLabel(item)
                             .tag(item)
                     }
                 }
 
-                Section("系统") {
+                Section(String(localized: "sidebar.section.system", defaultValue: "System")) {
                     ForEach(Pane.system) { item in
                         HStack {
                             SidebarIcon(name: item.icon, isSelected: pane == item)
                             Text(item.title)
                             if item == .history, !history.batches.isEmpty {
                                 Spacer()
-                                Text("\(history.batches.count)")
+                                Text(verbatim: "\(history.batches.count)")
                                     .font(.caption2.monospacedDigit())
                                     .foregroundStyle(.secondary)
                             }
@@ -192,10 +198,12 @@ struct ContentView: View {
         case .projects:
             ScanPane(
                 vm: projectsVM,
-                title: "项目产物",
-                subtitle: "找出长期未使用的依赖和构建目录",
+                title: String(localized: "projects.title", defaultValue: "Build products"),
+                subtitle: String(localized: "projects.subtitle",
+                                 defaultValue: "Find dependency and build directories nobody has touched in a while"),
                 icon: "shippingbox",
-                emptyHint: "未发现项目产物目录",
+                emptyHint: String(localized: "projects.empty",
+                                  defaultValue: "No build product directories found"),
                 roots: projectRoots,
                 hasFolderAccess: folderAccess.hasFullDiskAccess,
                 requestFolderAccess: { showFolderAccess = true }
@@ -203,10 +211,12 @@ struct ContentView: View {
         case .installers:
             ScanPane(
                 vm: installersVM,
-                title: "安装包",
-                subtitle: "整理下载目录和桌面上的 DMG、PKG",
+                title: String(localized: "installers.title", defaultValue: "Installers"),
+                subtitle: String(localized: "installers.subtitle",
+                                 defaultValue: "Tidy up the DMGs and PKGs in Downloads and on the Desktop"),
                 icon: "opticaldiscdrive",
-                emptyHint: "未发现 .dmg / .pkg 安装包",
+                emptyHint: String(localized: "installers.empty",
+                                  defaultValue: "No .dmg / .pkg installers found"),
                 roots: projectRoots,
                 hasFolderAccess: folderAccess.hasFullDiskAccess,
                 requestFolderAccess: { showFolderAccess = true }

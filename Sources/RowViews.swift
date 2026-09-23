@@ -1,5 +1,7 @@
 import SwiftUI
 
+private let emptyToggleLabel = ""
+
 struct TaskRowView: View {
     let item: CleanupItem
     @Binding var isEnabled: Bool
@@ -21,7 +23,11 @@ struct TaskRowView: View {
                 Text(item.kind.title).fontWeight(.medium)
                 Text(item.isAvailable
                      ? item.kind.subtitle
-                     : (item.kind.requiredTool.map { "未安装 \($0)，已禁用" } ?? "未检测到，已禁用"))
+                     : (item.kind.requiredTool.map {
+                         String(localized: "task.unavailable.tool",
+                                defaultValue: "\($0) isn’t installed, so this is off")
+                       } ?? String(localized: "task.unavailable",
+                                   defaultValue: "Not detected, so this is off")))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
@@ -34,11 +40,12 @@ struct TaskRowView: View {
                 Image(systemName: "info.circle").foregroundStyle(.secondary)
             }
             .buttonStyle(.borderless)
-            .help("查看清理详情")
+            .help(String(localized: "task.details.help", defaultValue: "See what gets cleaned"))
             .popover(isPresented: $showInfo, arrowEdge: .bottom) {
                 DetailPopover(kind: item.kind)
             }
-            Toggle("", isOn: $isEnabled)
+            // 空标签用常量而不是字面量 ""：SwiftUI 会把空串当成本地化 key 抽进目录。
+            Toggle(emptyToggleLabel, isOn: $isEnabled)
                 .labelsHidden()
                 .toggleStyle(.switch)
                 .disabled(!item.isAvailable || locked)
@@ -53,7 +60,9 @@ struct TaskRowView: View {
         case .none:
             EmptyView()
         case .computing:
-            Text("计算中…").font(.caption).foregroundStyle(.tertiary)
+            Text(String(localized: "task.size.computing", defaultValue: "Measuring…"))
+                .font(.caption)
+                .foregroundStyle(.tertiary)
         case .known(let bytes):
             Text(byteString(bytes))
                 .font(.caption.monospacedDigit())
@@ -81,7 +90,8 @@ struct ScanRowView: View {
                         .fontWeight(.medium)
                         .lineLimit(1)
                         .truncationMode(.middle)
-                    Text("\(item.location) · \(item.daysAgo) 天前")
+                    Text(String(localized: "scan.row.age",
+                                defaultValue: "\(item.location) · \(item.daysAgo) days ago"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
@@ -96,7 +106,9 @@ struct ScanRowView: View {
         .contentShape(Rectangle())
         .onTapGesture(perform: onToggle)
         .accessibilityAddTraits(.isButton)
-        .accessibilityLabel("\(item.isSelected ? "取消选择" : "选择") \(item.title)")
+        .accessibilityLabel(item.isSelected
+            ? String(localized: "scan.row.deselect", defaultValue: "Deselect \(item.title)")
+            : String(localized: "scan.row.select", defaultValue: "Select \(item.title)"))
     }
 }
 
@@ -118,7 +130,10 @@ struct ApplicationRow: View {
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 3) {
-                    Text(app.size > 0 ? byteString(app.size) : "大小待检查")
+                    Text(app.size > 0
+                         ? byteString(app.size)
+                         : String(localized: "app.size.pending",
+                                  defaultValue: "Size not checked yet"))
                         .font(.system(.callout, design: .monospaced, weight: .semibold))
                     if app.isChromePWA {
                         Text(app.versionLabel)
@@ -132,12 +147,12 @@ struct ApplicationRow: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     } else {
-                        Text("v N/A")
+                        Text(String(localized: "app.version.unknown", defaultValue: "v N/A"))
                             .font(.caption)
                             .foregroundStyle(.tertiary)
                     }
                 }
-                Button("检查") { onInspect() }
+                Button(String(localized: "app.inspect", defaultValue: "Inspect")) { onInspect() }
                     .buttonStyle(.bordered)
             }
         }
@@ -168,14 +183,14 @@ struct AppCleanupRow: View {
                         .fontWeight(.medium)
                         .lineLimit(1)
                         .truncationMode(.middle)
-                    Text("\(item.location) · \(item.reason)")
+                    Text(verbatim: "\(item.location) · \(item.reason)")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                         .truncationMode(.middle)
                 }
                 Spacer()
-                Text(item.confidence.rawValue)
+                Text(item.confidence.title)
                     .font(.caption2.weight(.medium))
                     .foregroundStyle(item.confidence == .exact ? Color.green : Color.orange)
                     .padding(.horizontal, 8)
@@ -211,7 +226,9 @@ struct BTMRowView: View {
                 .frame(width: 34, height: 34)
 
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(item.name.isEmpty ? "(未命名)" : item.name)
+                    Text(item.name.isEmpty
+                         ? String(localized: "btm.unnamed", defaultValue: "(unnamed)")
+                         : item.name)
                         .fontWeight(.medium)
                         .lineLimit(1)
                     Text(item.location)
@@ -239,7 +256,9 @@ struct BTMRowView: View {
     }
 
     private var statusBadge: some View {
-        Text(item.isEnabled ? "已启用" : "已停用")
+        Text(item.isEnabled
+             ? String(localized: "btm.enabled", defaultValue: "Enabled")
+             : String(localized: "btm.disabled", defaultValue: "Disabled"))
             .font(.caption2.weight(.medium))
             .foregroundStyle(item.isEnabled ? Color.green : Color.secondary)
             .padding(.horizontal, 8)
@@ -248,7 +267,7 @@ struct BTMRowView: View {
     }
 
     private var orphanBadge: some View {
-        Text("已失效")
+        Text(String(localized: "btm.stale", defaultValue: "Stale"))
             .font(.caption2.weight(.medium))
             .foregroundStyle(.orange)
             .padding(.horizontal, 8)
@@ -262,15 +281,22 @@ struct BTMDetailPopover: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Label(item.name.isEmpty ? "(未命名)" : item.name, systemImage: item.icon)
+            Label(item.name.isEmpty
+                  ? String(localized: "btm.unnamed", defaultValue: "(unnamed)")
+                  : item.name,
+                  systemImage: item.icon)
                 .font(.headline)
-            row("类型", item.typeLabel)
-            row("状态", item.dispositionRaw)
-            row("开发者", item.developer)
+            row(String(localized: "btm.field.type", defaultValue: "Type"), item.typeLabel)
+            row(String(localized: "btm.field.status", defaultValue: "Status"), item.dispositionRaw)
+            row(String(localized: "btm.field.developer", defaultValue: "Developer"), item.developer)
             row("Team ID", item.teamID)
             row("Bundle ID", item.bundleID)
-            row("位置", item.isOrphaned ? "\(item.location)  ⚠︎ 文件缺失" : item.location)
-            row("上次使用", item.lastUse)
+            row(String(localized: "btm.field.location", defaultValue: "Location"),
+                item.isOrphaned
+                    ? String(localized: "btm.location.missing",
+                             defaultValue: "\(item.location)  ⚠︎ file is missing")
+                    : item.location)
+            row(String(localized: "btm.field.lastuse", defaultValue: "Last used"), item.lastUse)
         }
         .padding(16)
         .frame(width: 400, alignment: .leading)

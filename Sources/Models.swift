@@ -1,10 +1,21 @@
 import Foundation
 
 // 清理任务分类
+//
+// rawValue 同时当 Identifiable.id 用，所以它必须是稳定的 ASCII 标识，不能是界面文案——
+// 文案一翻译，id 就跟着语言变。显示走 `title`。
 enum CleanupCategory: String, CaseIterable, Identifiable {
-    case update = "更新"
-    case clean = "清理"
+    case update
+    case clean
+
     var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .update: return String(localized: "category.update", defaultValue: "Update")
+        case .clean: return String(localized: "category.clean", defaultValue: "Clean")
+        }
+    }
 }
 
 // 每一个可执行的清理/更新任务
@@ -39,55 +50,99 @@ enum CleanupKind: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .brewUpdate: return "更新 Homebrew"
-        case .masUpgrade: return "更新 App Store 应用"
-        case .cocoapods: return "清理 CocoaPods 缓存"
-        case .xcode: return "清理 Xcode"
-        case .npm: return "清理 npm 缓存"
-        case .pnpm: return "清理 pnpm store"
-        case .yarn: return "清理 Yarn 缓存"
-        case .cargo: return "清理 Cargo 缓存"
-        case .go: return "清理 Go 缓存"
-        case .gradle: return "清理 Gradle 缓存"
-        case .maven: return "清理 Maven 仓库"
-        case .pip: return "清理 pip 缓存"
-        case .swiftpm: return "清理 SwiftPM 缓存"
-        case .caches: return "清理系统缓存"
-        case .logs: return "清理应用日志"
-        case .trash: return "清空废纸篓"
-        case .brewCleanup: return "清理 Homebrew"
-        case .gemCleanup: return "清理 Ruby Gem"
-        case .dockerImages: return "清理 Docker 悬挂 image"
-        case .dockerBuildCache: return "清理 Docker 构建缓存"
-        case .dockerContainers: return "清理 Docker 已停容器"
-        case .dockerVolumes: return "清理 Docker 未挂载 volume"
+        case .brewUpdate:
+            return String(localized: "kind.brewUpdate.title", defaultValue: "Update Homebrew")
+        case .masUpgrade:
+            return String(localized: "kind.masUpgrade.title", defaultValue: "Update App Store apps")
+        case .cocoapods:
+            return String(localized: "kind.cocoapods.title", defaultValue: "Clean the CocoaPods cache")
+        case .xcode:
+            return String(localized: "kind.xcode.title", defaultValue: "Clean up Xcode")
+        case .npm:
+            return String(localized: "kind.npm.title", defaultValue: "Clean the npm cache")
+        case .pnpm:
+            return String(localized: "kind.pnpm.title", defaultValue: "Clean the pnpm store")
+        case .yarn:
+            return String(localized: "kind.yarn.title", defaultValue: "Clean the Yarn cache")
+        case .cargo:
+            return String(localized: "kind.cargo.title", defaultValue: "Clean the Cargo cache")
+        case .go:
+            return String(localized: "kind.go.title", defaultValue: "Clean the Go cache")
+        case .gradle:
+            return String(localized: "kind.gradle.title", defaultValue: "Clean the Gradle cache")
+        case .maven:
+            return String(localized: "kind.maven.title", defaultValue: "Clean the Maven repository")
+        case .pip:
+            return String(localized: "kind.pip.title", defaultValue: "Clean the pip cache")
+        case .swiftpm:
+            return String(localized: "kind.swiftpm.title", defaultValue: "Clean the SwiftPM cache")
+        case .caches:
+            return String(localized: "kind.caches.title", defaultValue: "Clean system caches")
+        case .logs:
+            return String(localized: "kind.logs.title", defaultValue: "Clean app logs")
+        case .trash:
+            return String(localized: "kind.trash.title", defaultValue: "Empty the Trash")
+        case .brewCleanup:
+            return String(localized: "kind.brewCleanup.title", defaultValue: "Clean up Homebrew")
+        case .gemCleanup:
+            return String(localized: "kind.gemCleanup.title", defaultValue: "Clean up Ruby gems")
+        case .dockerImages:
+            return String(localized: "kind.dockerImages.title", defaultValue: "Clean dangling Docker images")
+        case .dockerBuildCache:
+            return String(localized: "kind.dockerBuildCache.title", defaultValue: "Clean the Docker build cache")
+        case .dockerContainers:
+            return String(localized: "kind.dockerContainers.title", defaultValue: "Clean stopped Docker containers")
+        case .dockerVolumes:
+            return String(localized: "kind.dockerVolumes.title", defaultValue: "Clean unmounted Docker volumes")
         }
     }
 
+    // 副标题：要么是原样的命令 / 路径（不翻译），要么是一句需要本地化的说明。
+    // 不要把命令和说明拼在一个本地化字符串里——`brew update` 这种词条进了目录只会被误译。
     var subtitle: String {
         switch self {
         case .brewUpdate: return "brew update / upgrade / upgrade --cask --greedy"
         case .masUpgrade: return "mas upgrade"
         case .cocoapods: return "pod cache clean --all"
-        case .xcode: return "DerivedData、Archives、旧 DeviceSupport、无效模拟器"
+        case .xcode:
+            return String(localized: "kind.xcode.subtitle",
+                          defaultValue: "DerivedData, Archives, old DeviceSupport, unavailable simulators")
         case .npm: return "~/.npm/_cacache"
         case .pnpm: return "pnpm store prune"
         case .yarn: return "~/Library/Caches/Yarn"
-        case .cargo: return "~/.cargo/registry 缓存与源码"
+        case .cargo:
+            return String(localized: "kind.cargo.subtitle",
+                          defaultValue: "~/.cargo/registry cache and sources")
         case .go: return "go clean -cache -modcache"
         case .gradle: return "~/.gradle/caches"
-        case .maven: return "~/.m2/repository（下次构建会重新下载）"
+        case .maven:
+            return String(localized: "kind.maven.subtitle",
+                          defaultValue: "~/.m2/repository (the next build downloads it again)")
         case .pip: return "~/Library/Caches/pip"
         case .swiftpm: return "~/Library/Caches/org.swift.swiftpm"
-        case .caches: return "~/Library/Caches 内容"
-        case .logs: return "~/Library/Logs 内容"
-        case .trash: return "~/.Trash 内容"
+        case .caches:
+            return String(localized: "kind.caches.subtitle",
+                          defaultValue: "The contents of ~/Library/Caches")
+        case .logs:
+            return String(localized: "kind.logs.subtitle",
+                          defaultValue: "The contents of ~/Library/Logs")
+        case .trash:
+            return String(localized: "kind.trash.subtitle",
+                          defaultValue: "The contents of ~/.Trash")
         case .brewCleanup: return "brew cleanup"
         case .gemCleanup: return "gem cleanup"
-        case .dockerImages: return "docker image prune -f（仅 <none>:<none> 悬挂 image）"
-        case .dockerBuildCache: return "docker builder prune -af（重建可再生）"
-        case .dockerContainers: return "docker container prune -f（已停止容器）"
-        case .dockerVolumes: return "docker volume prune -f（未被容器引用的 volume，数据不可恢复）"
+        case .dockerImages:
+            return String(localized: "kind.dockerImages.subtitle",
+                          defaultValue: "docker image prune -f (only <none>:<none> dangling images)")
+        case .dockerBuildCache:
+            return String(localized: "kind.dockerBuildCache.subtitle",
+                          defaultValue: "docker builder prune -af (rebuildable)")
+        case .dockerContainers:
+            return String(localized: "kind.dockerContainers.subtitle",
+                          defaultValue: "docker container prune -f (stopped containers)")
+        case .dockerVolumes:
+            return String(localized: "kind.dockerVolumes.subtitle",
+                          defaultValue: "docker volume prune -f (volumes no container references; the data can’t be recovered)")
         }
     }
 
@@ -155,66 +210,117 @@ enum CleanupKind: String, CaseIterable, Identifiable {
         }
     }
 
-    // 详情：具体清理/执行的内容，每条 (目标, 说明)
+    // 详情：具体清理/执行的内容，每条 (目标, 说明)。
+    // `target` 是原样的命令 / 路径，不进本地化目录；只有 `note` 需要翻译。
     var details: [(target: String, note: String)] {
         switch self {
         case .brewUpdate:
             return [
-                ("brew update", "更新 formula / cask 索引"),
-                ("brew upgrade", "升级所有过时的 formula"),
-                ("brew upgrade --cask --greedy", "升级所有 cask，含自带自动更新的应用"),
+                ("brew update", String(localized: "detail.brewUpdate.index",
+                                       defaultValue: "Refresh the formula / cask index")),
+                ("brew upgrade", String(localized: "detail.brewUpdate.upgrade",
+                                        defaultValue: "Upgrade every outdated formula")),
+                ("brew upgrade --cask --greedy",
+                 String(localized: "detail.brewUpdate.cask",
+                        defaultValue: "Upgrade every cask, including apps that update themselves")),
             ]
         case .masUpgrade:
-            return [("mas upgrade", "升级所有已安装的 App Store 应用")]
+            return [("mas upgrade", String(localized: "detail.masUpgrade",
+                                           defaultValue: "Upgrade every installed App Store app"))]
         case .cocoapods:
-            return [("pod cache clean --all", "删除 ~/Library/Caches/CocoaPods 全部 pod 缓存")]
+            return [("pod cache clean --all",
+                     String(localized: "detail.cocoapods",
+                            defaultValue: "Delete every pod cache under ~/Library/Caches/CocoaPods"))]
         case .xcode:
             return [
-                ("~/Library/Developer/Xcode/DerivedData/*", "编译中间产物与索引"),
-                ("~/Library/Developer/Xcode/Archives/*", "打包归档 (.xcarchive)"),
-                ("~/Library/Developer/Xcode/Products/*", "导出的产物"),
-                ("xcrun simctl delete unavailable", "删除不可用 / 无效的模拟器"),
-                ("~/Library/Developer/Xcode/iOS DeviceSupport/*", "旧真机调试符号，保留最新一个版本"),
+                ("~/Library/Developer/Xcode/DerivedData/*",
+                 String(localized: "detail.xcode.derivedData",
+                        defaultValue: "Build intermediates and indexes")),
+                ("~/Library/Developer/Xcode/Archives/*",
+                 String(localized: "detail.xcode.archives",
+                        defaultValue: "Packaged archives (.xcarchive)")),
+                ("~/Library/Developer/Xcode/Products/*",
+                 String(localized: "detail.xcode.products", defaultValue: "Exported products")),
+                ("xcrun simctl delete unavailable",
+                 String(localized: "detail.xcode.simulators",
+                        defaultValue: "Delete unavailable simulators")),
+                ("~/Library/Developer/Xcode/iOS DeviceSupport/*",
+                 String(localized: "detail.xcode.deviceSupport",
+                        defaultValue: "Old on-device debug symbols, keeping the newest version")),
             ]
         case .npm:
-            return [("~/.npm/_cacache/*", "npm 下载缓存，下次安装会重建")]
+            return [("~/.npm/_cacache/*",
+                     String(localized: "detail.npm",
+                            defaultValue: "The npm download cache, rebuilt on the next install"))]
         case .pnpm:
-            return [("pnpm store prune", "删除 pnpm store 中无项目引用的包")]
+            return [("pnpm store prune",
+                     String(localized: "detail.pnpm",
+                            defaultValue: "Delete packages in the pnpm store that no project references"))]
         case .yarn:
-            return [("~/Library/Caches/Yarn/*", "Yarn (classic) 全局缓存")]
+            return [("~/Library/Caches/Yarn/*",
+                     String(localized: "detail.yarn",
+                            defaultValue: "The Yarn (classic) global cache"))]
         case .cargo:
             return [
-                ("~/.cargo/registry/cache/*", "crate 下载压缩包"),
-                ("~/.cargo/registry/src/*", "解压的 crate 源码"),
+                ("~/.cargo/registry/cache/*",
+                 String(localized: "detail.cargo.cache", defaultValue: "Downloaded crate archives")),
+                ("~/.cargo/registry/src/*",
+                 String(localized: "detail.cargo.src", defaultValue: "Unpacked crate sources")),
             ]
         case .go:
-            return [("go clean -cache -modcache", "构建缓存 + 模块缓存（模块缓存只读，须经 go 删除）")]
+            return [("go clean -cache -modcache",
+                     String(localized: "detail.go",
+                            defaultValue: "The build cache plus the module cache (the module cache is read-only, so go has to delete it)"))]
         case .gradle:
-            return [("~/.gradle/caches/*", "Gradle 依赖与构建缓存")]
+            return [("~/.gradle/caches/*",
+                     String(localized: "detail.gradle",
+                            defaultValue: "Gradle dependency and build caches"))]
         case .maven:
-            return [("~/.m2/repository/*", "Maven 本地仓库；清空后下次构建会重新下载全部依赖")]
+            return [("~/.m2/repository/*",
+                     String(localized: "detail.maven",
+                            defaultValue: "The local Maven repository; once emptied, the next build downloads every dependency again"))]
         case .pip:
-            return [("~/Library/Caches/pip/*", "pip wheel / http 缓存")]
+            return [("~/Library/Caches/pip/*",
+                     String(localized: "detail.pip", defaultValue: "The pip wheel / HTTP cache"))]
         case .swiftpm:
-            return [("~/Library/Caches/org.swift.swiftpm/*", "SwiftPM 依赖缓存")]
+            return [("~/Library/Caches/org.swift.swiftpm/*",
+                     String(localized: "detail.swiftpm", defaultValue: "The SwiftPM dependency cache"))]
         case .caches:
-            return [("~/Library/Caches/*", "用户级应用缓存，App 会按需重建")]
+            return [("~/Library/Caches/*",
+                     String(localized: "detail.caches",
+                            defaultValue: "User-level app caches, which apps rebuild as they need them"))]
         case .logs:
-            return [("~/Library/Logs/*", "用户级应用日志 (系统级 /Library/Logs 需管理员权限，不处理)")]
+            return [("~/Library/Logs/*",
+                     String(localized: "detail.logs",
+                            defaultValue: "User-level app logs (system-level /Library/Logs needs admin rights and is left alone)"))]
         case .trash:
-            return [("~/.Trash/*", "废纸篓内容，删除后无法恢复")]
+            return [("~/.Trash/*",
+                     String(localized: "detail.trash",
+                            defaultValue: "The contents of the Trash, unrecoverable once deleted"))]
         case .brewCleanup:
-            return [("brew cleanup", "删除旧版本、下载缓存、失效符号链接")]
+            return [("brew cleanup",
+                     String(localized: "detail.brewCleanup",
+                            defaultValue: "Delete old versions, download caches and broken symlinks"))]
         case .gemCleanup:
-            return [("gem cleanup", "删除各 gem 的旧版本，仅保留最新")]
+            return [("gem cleanup",
+                     String(localized: "detail.gemCleanup",
+                            defaultValue: "Delete each gem’s old versions, keeping only the newest"))]
         case .dockerImages:
-            return [("docker image prune -f", "删除无 tag 的 <none>:<none> 悬挂 image；已被容器引用的 image 保留")]
+            return [("docker image prune -f",
+                     String(localized: "detail.dockerImages",
+                            defaultValue: "Delete untagged <none>:<none> dangling images; images a container references are kept"))]
         case .dockerBuildCache:
-            return [("docker builder prune -af", "清空 BuildKit 构建缓存；下次构建会重建，速度会变慢")]
+            return [("docker builder prune -af",
+                     String(localized: "detail.dockerBuildCache",
+                            defaultValue: "Empty the BuildKit build cache; the next build rebuilds it and runs slower"))]
         case .dockerContainers:
-            return [("docker container prune -f", "删除已停止的容器；运行中容器不受影响")]
+            return [("docker container prune -f",
+                     String(localized: "detail.dockerContainers",
+                            defaultValue: "Delete stopped containers; running containers are untouched"))]
         case .dockerVolumes:
-            return [("docker volume prune -f", "删除未被任何容器引用的 volume；卷内数据不可恢复，默认关闭")]
+            return [("docker volume prune -f",
+                     String(localized: "detail.dockerVolumes",
+                            defaultValue: "Delete volumes no container references; the data inside can’t be recovered, so this is off by default"))]
         }
     }
 

@@ -72,7 +72,11 @@ final class CruftTests: XCTestCase {
 
         XCTAssertFalse(app.isChromePWA)
         XCTAssertNil(app.displayVersion)
-        XCTAssertEqual(app.versionLabel, "v N/A")
+        // "v N/A" 走字符串目录，跟着界面语言变，所以比的是同一个 key 而不是字面量。
+        XCTAssertEqual(
+            app.versionLabel,
+            String(localized: "app.version.unknown", defaultValue: "v N/A")
+        )
     }
 
     func testBundleIdentifierMatchesAreExact() {

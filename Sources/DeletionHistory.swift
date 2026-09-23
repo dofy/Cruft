@@ -12,11 +12,61 @@ struct TrashedItem: Codable, Hashable, Identifiable {
 struct DeletionBatch: Codable, Hashable, Identifiable {
     let id: UUID
     let createdAt: Date
+    /// 写进 deletion-history.json 的标题文案。**存储值**，不要拿它当显示源——
+    /// 老记录里是当时那一版语言的字符串。显示走 `displayTitle`。
     let title: String
+    /// 同上，存储值。显示走 `displayTasks`。
     let tasks: [String]
+    /// 标题的稳定标识。老记录没有这个字段，解码成 nil 后回落到 `title`。
+    let titleKey: String?
+    /// 标题里要填的名字（目前只有「卸载 <应用名>」用）。
+    let titleArgument: String?
+    /// 任务的稳定标识：`CleanupKind.rawValue`，或下面 `displayTasks` 里那几个固定 key。
+    let taskKeys: [String]?
     var items: [TrashedItem]
 
     var totalBytes: Int64 { items.reduce(0) { $0 + $1.size } }
+
+    /// 批次标题，按当前语言渲染；没有 key 的老记录原样显示存下来的字符串。
+    var displayTitle: String {
+        switch titleKey {
+        case DeletionBatch.routineKey:
+            return String(localized: "history.batch.routine", defaultValue: "Routine cleanup")
+        case DeletionBatch.projectsKey:
+            return String(localized: "history.batch.projects", defaultValue: "Build products")
+        case DeletionBatch.installersKey:
+            return String(localized: "history.batch.installers", defaultValue: "Installers")
+        case DeletionBatch.uninstallKey:
+            return String(localized: "history.batch.uninstall",
+                          defaultValue: "Uninstall \(titleArgument ?? "")")
+        default:
+            return title
+        }
+    }
+
+    /// 任务名列表，同样按当前语言渲染。
+    var displayTasks: [String] {
+        guard let taskKeys else { return tasks }
+        return taskKeys.map { key in
+            if let kind = CleanupKind(rawValue: key) { return kind.title }
+            switch key {
+            case DeletionBatch.taskTrashKey:
+                return String(localized: "history.task.trash", defaultValue: "Moved to the Trash")
+            case DeletionBatch.taskAppKey:
+                return String(localized: "history.task.appAndRelated",
+                              defaultValue: "The app and its related files")
+            default:
+                return key
+            }
+        }
+    }
+
+    static let routineKey = "routine"
+    static let projectsKey = "projects"
+    static let installersKey = "installers"
+    static let uninstallKey = "uninstall"
+    static let taskTrashKey = "trash"
+    static let taskAppKey = "appAndRelated"
 }
 
 struct RestoreResult {
@@ -67,27 +117,38 @@ final class DeletionHistoryStore: ObservableObject {
         if allowed { refreshAvailability() }
     }
 
-    func record(title: String, tasks: [String], items: [TrashedItem]) {
+    func record(
+        title: String,
+        tasks: [String],
+        titleKey: String? = nil,
+        titleArgument: String? = nil,
+        taskKeys: [String]? = nil,
+        items: [TrashedItem]
+    ) {
         guard !items.isEmpty else { return }
         let batch = DeletionBatch(
             id: UUID(),
             createdAt: Date(),
             title: title,
             tasks: tasks,
+            titleKey: titleKey,
+            titleArgument: titleArgument,
+            taskKeys: taskKeys,
             items: items
         )
         batches.insert(batch, at: 0)
         if batches.count > maxBatchCount {
             batches = Array(batches.prefix(maxBatchCount))
         }
-        statusMessage = "已保存可恢复记录"
+        statusMessage = String(localized: "history.status.saved",
+                               defaultValue: "Restore point saved")
         save()
     }
 
     func restore(_ batch: DeletionBatch) async {
         guard hasFolderAccess, !isRestoring else { return }
         isRestoring = true
-        statusMessage = "正在恢复…"
+        statusMessage = String(localized: "history.status.restoring", defaultValue: "Restoring…")
 
         let result = await Task.detached(priority: .userInitiated) {
             Self.restoreItems(batch.items)
@@ -103,18 +164,22 @@ final class DeletionHistoryStore: ObservableObject {
 
         isRestoring = false
         if result.restored.isEmpty {
-            statusMessage = "没有可恢复的项目；它们可能已从废纸篓移除"
+            statusMessage = String(localized: "history.status.nothing",
+                                   defaultValue: "Nothing could be restored; these may already be out of the Trash")
         } else if result.failed.isEmpty {
-            statusMessage = "已恢复 \(result.restored.count) 项"
+            statusMessage = String(localized: "history.status.restored",
+                                   defaultValue: "Restored \(result.restored.count) items")
         } else {
-            statusMessage = "已恢复 \(result.restored.count) 项，\(result.failed.count) 项存在冲突或已丢失"
+            statusMessage = String(localized: "history.status.partial",
+                                   defaultValue: "Restored \(result.restored.count) items; \(result.failed.count) conflicted or went missing")
         }
         save()
     }
 
     func forget(_ batch: DeletionBatch) {
         batches.removeAll { $0.id == batch.id }
-        statusMessage = "已移除历史记录；废纸篓中的文件未受影响"
+        statusMessage = String(localized: "history.status.forgotten",
+                               defaultValue: "Record removed; the files in the Trash are untouched")
         save()
     }
 
@@ -169,7 +234,8 @@ final class DeletionHistoryStore: ObservableObject {
             let data = try encoder.encode(batches)
             try data.write(to: historyURL, options: .atomic)
         } catch {
-            statusMessage = "历史记录保存失败：\(error.localizedDescription)"
+            statusMessage = String(localized: "history.status.saveFailed",
+                                   defaultValue: "Couldn’t save the history: \(error.localizedDescription)")
         }
     }
 
@@ -181,7 +247,8 @@ final class DeletionHistoryStore: ObservableObject {
             batches = try decoder.decode([DeletionBatch].self, from: data)
         } catch {
             batches = []
-            statusMessage = "历史记录读取失败：\(error.localizedDescription)"
+            statusMessage = String(localized: "history.status.loadFailed",
+                                   defaultValue: "Couldn’t read the history: \(error.localizedDescription)")
         }
     }
 }

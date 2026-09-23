@@ -1,5 +1,7 @@
 # Cruft
 
+**English** · [简体中文](README.zh-Hans.md) · [繁體中文](README.zh-Hant.md)
+
 A small native **macOS app** that clears the *cruft* a developer machine piles
 up — Xcode DerivedData, toolchain caches (npm/pnpm/yarn, Cargo, Go, Gradle,
 Maven, pip, SwiftPM), system caches, logs, Homebrew/CocoaPods/gem leftovers, and
@@ -13,9 +15,8 @@ reclaimed.
 
 ## What it does
 
-Six panes in a native sidebar: **清理 (Clean)**, **项目产物 (Project
-artifacts)**, **安装包 (Installers)**, **应用清理 (Applications)**, **背景 App
-(Background activity)**, and **恢复历史 (Recovery history)**.
+Six panes in a native sidebar: **Clean**, **Build products**, **Installers**,
+**App cleanup**, **Background apps**, and **Restore history**.
 
 ### Clean pane
 
@@ -111,6 +112,27 @@ and emptying the Trash remain non-recoverable.
   cleanup folders. Until access is granted, scanning and cleanup stay paused behind
   one in-app permission reminder.
 
+## Localization
+
+The UI ships in English, Simplified Chinese and Traditional Chinese, following
+the system language. There is no in-app language picker — set it per app under
+System Settings → General → Language & Region.
+
+- Source language is `en`. Every `defaultValue` in the Swift code is English.
+- Copy lives in `Sources/Localizable.xcstrings`; the Full Disk Access and folder
+  usage descriptions live in `Sources/InfoPlist.xcstrings` (the English base
+  comes from the `INFOPLIST_KEY_*` entries in `project.yml`).
+- `./Scripts/check-localization.sh` (also a CI step) fails on a missing key, a
+  missing translation, an orphaned catalog entry, or Chinese hardcoded in Swift.
+- Enum raw values that double as `Identifiable.id` (`CleanupCategory`,
+  `AppMatchConfidence`) are stable ASCII identifiers, never display text.
+- `deletion-history.json` stores **keys** (`titleKey`, `taskKeys`) alongside the
+  text, so a restore point written in one language still renders in whatever
+  language you switch to. Records written before this change have no keys and
+  fall back to the text they were saved with.
+- `~/Library/Logs/Cruft/operations.log` is a diagnostic log and stays in a fixed
+  English format regardless of UI language.
+
 ## Safety
 
 - File-based Clean-pane deletions move to the Trash through Swift's
@@ -144,6 +166,14 @@ Or from the command line:
 xcodebuild -project Cruft.xcodeproj -scheme Cruft -configuration Release build
 ```
 
+Tests and the localization gate:
+
+```bash
+xcodebuild test -project Cruft.xcodeproj -scheme Cruft \
+  -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO
+./Scripts/check-localization.sh
+```
+
 To install the build into `/Applications`:
 
 ```bash
@@ -174,8 +204,11 @@ Sources/
 ├── Scanner.swift           # project-artifact + installer scanners, ScanViewModel
 ├── Shell.swift             # Process runner + FileManager cleaner + moveToTrash
 ├── Models.swift            # CleanupKind / CleanupItem
+├── Localizable.xcstrings   # UI copy, en (source) + zh-Hans + zh-Hant
+├── InfoPlist.xcstrings     # localized permission usage descriptions
 └── Assets.xcassets/        # app icon
 Tests/CruftTests.swift      # matching, path guards, and restore tests
+Scripts/check-localization.sh  # String Catalog gate (also runs in CI)
 project.yml                 # xcodegen spec
 ```
 

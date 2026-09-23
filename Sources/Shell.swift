@@ -34,7 +34,8 @@ enum Shell {
         do {
             try process.run()
         } catch {
-            log("启动失败: \(error.localizedDescription)\n")
+            log(String(localized: "log.launchFailed",
+                       defaultValue: "Couldn’t launch: \(error.localizedDescription)\n"))
             return -1
         }
 
@@ -56,16 +57,18 @@ enum FileCleaner {
         let fm = FileManager.default
         let path = (directory as NSString).expandingTildeInPath
         guard let items = try? fm.contentsOfDirectory(atPath: path) else {
-            log("跳过（不存在或无权限）: \(path)\n")
+            log(String(localized: "log.skipPath",
+                       defaultValue: "Skipped (missing or no permission): \(path)\n"))
             return
         }
         for item in items {
             let full = (path as NSString).appendingPathComponent(item)
             do {
                 try fm.removeItem(atPath: full)
-                log("已删除 \(item)\n")
+                log(String(localized: "log.deleted", defaultValue: "Deleted \(item)\n"))
             } catch {
-                log("跳过 \(item): \(error.localizedDescription)\n")
+                log(String(localized: "log.skipItemError",
+                           defaultValue: "Skipped \(item): \(error.localizedDescription)\n"))
             }
         }
     }
@@ -75,7 +78,8 @@ enum FileCleaner {
         let fm = FileManager.default
         let path = (directory as NSString).expandingTildeInPath
         guard let items = try? fm.contentsOfDirectory(atPath: path) else {
-            log("跳过（不存在或无权限）: \(path)\n")
+            log(String(localized: "log.skipPath",
+                       defaultValue: "Skipped (missing or no permission): \(path)\n"))
             return []
         }
 
@@ -84,9 +88,10 @@ enum FileCleaner {
             let full = (path as NSString).appendingPathComponent(item)
             if let record = moveToTrash(full) {
                 trashed.append(record)
-                log("已移到废纸篓 \(item)\n")
+                log(String(localized: "log.trashed", defaultValue: "Moved \(item) to the Trash\n"))
             } else {
-                log("跳过 \(item)：无法移到废纸篓\n")
+                log(String(localized: "log.trashFailed",
+                           defaultValue: "Skipped \(item): couldn’t move it to the Trash\n"))
             }
         }
         return trashed

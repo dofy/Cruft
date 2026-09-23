@@ -141,7 +141,7 @@ struct StorageGauge: View {
             .frame(width: 42, height: 42)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text("可用空间")
+                Text(String(localized: "storage.free", defaultValue: "Free space"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 Text(byteString(free))

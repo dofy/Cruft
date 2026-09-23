@@ -23,14 +23,26 @@ struct InstalledApplication: Identifiable, Hashable {
 
     var versionLabel: String {
         if isChromePWA { return "Chrome PWA" }
-        guard let displayVersion else { return "v N/A" }
+        guard let displayVersion else {
+            return String(localized: "app.version.unknown", defaultValue: "v N/A")
+        }
         return "v\(displayVersion)"
     }
 }
 
+// rawValue 是稳定标识，不是界面文案；显示走 `title`。
 enum AppMatchConfidence: String, Hashable {
-    case exact = "精确匹配"
-    case likely = "名称匹配"
+    case exact
+    case likely
+
+    var title: String {
+        switch self {
+        case .exact:
+            return String(localized: "app.match.exact", defaultValue: "Exact match")
+        case .likely:
+            return String(localized: "app.match.likely", defaultValue: "Name match")
+        }
+    }
 }
 
 struct AppCleanupItem: Identifiable, Hashable {
@@ -108,7 +120,7 @@ enum AppScanner {
             title: app.name + ".app",
             location: abbreviate((app.path as NSString).deletingLastPathComponent),
             size: FileCleaner.allocatedSize(atPath: app.path),
-            reason: "应用本体",
+            reason: String(localized: "app.reason.itself", defaultValue: "The app itself"),
             confidence: .exact,
             isApplication: true,
             isSelected: true
@@ -169,14 +181,16 @@ enum AppScanner {
                 || stem.hasSuffix("." + bundle)
 
             if exactBundle || scopedBundle {
-                return (.exact, "Bundle ID：\(bundleIdentifier)")
+                return (.exact, String(localized: "app.reason.bundleid",
+                                       defaultValue: "Bundle ID: \(bundleIdentifier)"))
             }
         }
 
         let normalizedEntry = normalize((entryName as NSString).deletingPathExtension)
         let normalizedApp = normalize(appName)
         if normalizedApp.count >= 4, normalizedEntry == normalizedApp {
-            return (.likely, "名称与应用一致，默认不选")
+            return (.likely, String(localized: "app.reason.nameMatch",
+                                    defaultValue: "The name matches the app, so it isn’t ticked by default"))
         }
         return nil
     }
@@ -244,14 +258,16 @@ final class AppCleanerViewModel: ObservableObject {
     func scanApps() {
         guard !isScanningApps else { return }
         isScanningApps = true
-        statusMessage = "正在读取应用与大小…"
+        statusMessage = String(localized: "app.status.reading",
+                               defaultValue: "Reading apps and their sizes…")
         Task.detached(priority: .utility) {
             let found = AppScanner.installedApplications()
             await MainActor.run {
                 self.apps = found
                 self.isScanningApps = false
                 self.hasScannedApps = true
-                self.statusMessage = "找到 \(found.count) 个应用"
+                self.statusMessage = String(localized: "app.status.found",
+                                            defaultValue: "Found \(found.count) apps")
             }
         }
     }
@@ -261,13 +277,15 @@ final class AppCleanerViewModel: ObservableObject {
         selectedApp = app
         candidates = []
         isScanningRelated = true
-        statusMessage = "正在匹配 \(app.name) 的关联文件…"
+        statusMessage = String(localized: "app.status.matching",
+                               defaultValue: "Matching the files related to \(app.name)…")
         Task.detached(priority: .utility) {
             let found = AppScanner.relatedFiles(for: app)
             await MainActor.run {
                 self.candidates = found
                 self.isScanningRelated = false
-                self.statusMessage = "找到 \(max(0, found.count - 1)) 个关联项目"
+                self.statusMessage = String(localized: "app.status.related",
+                                            defaultValue: "Found \(max(0, found.count - 1)) related items")
             }
         }
     }
@@ -282,7 +300,8 @@ final class AppCleanerViewModel: ObservableObject {
         let targets = candidates.filter(\.isSelected)
         guard !targets.isEmpty else { return }
         isDeleting = true
-        statusMessage = "正在移到废纸篓…"
+        statusMessage = String(localized: "app.status.moving",
+                               defaultValue: "Moving to the Trash…")
 
         let trashed = await Task.detached(priority: .userInitiated) {
             targets.compactMap { FileCleaner.moveToTrash($0.path) }
@@ -295,15 +314,22 @@ final class AppCleanerViewModel: ObservableObject {
         }
 
         DeletionHistoryStore.shared.record(
-            title: "卸载 \(app.name)",
-            tasks: ["应用及关联文件"],
+            title: String(localized: "history.batch.uninstall",
+                          defaultValue: "Uninstall \(app.name)"),
+            tasks: [String(localized: "history.task.appAndRelated",
+                           defaultValue: "The app and its related files")],
+            titleKey: DeletionBatch.uninstallKey,
+            titleArgument: app.name,
+            taskKeys: [DeletionBatch.taskAppKey],
             items: trashed
         )
 
         isDeleting = false
         let failed = targets.count - trashed.count
         statusMessage = failed == 0
-            ? "已移到废纸篓 \(trashed.count) 项"
-            : "已移动 \(trashed.count) 项，\(failed) 项无权限或移动失败"
+            ? String(localized: "app.status.trashed",
+                     defaultValue: "Moved \(trashed.count) items to the Trash")
+            : String(localized: "app.status.trashedPartial",
+                     defaultValue: "Moved \(trashed.count) items; \(failed) lacked permission or failed to move")
     }
 }

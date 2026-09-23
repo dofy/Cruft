@@ -23,7 +23,8 @@ enum CleanerEngine {
             result.trashedItems += FileCleaner.moveContentsToTrash(of: "\(dev)/DerivedData", log: log)
             result.trashedItems += FileCleaner.moveContentsToTrash(of: "\(dev)/Archives", log: log)
             result.trashedItems += FileCleaner.moveContentsToTrash(of: "\(dev)/Products", log: log)
-            log("删除无效模拟器…\n")
+            log(String(localized: "log.simulators",
+                       defaultValue: "Deleting unavailable simulators…\n"))
             Shell.run("xcrun simctl delete unavailable", log: log)
             result.trashedItems += pruneDeviceSupport(base: "\(dev)/iOS DeviceSupport", log: log)
 
@@ -96,15 +97,17 @@ enum CleanerEngine {
         // 版本号语义排序，最后一个为最新
         let sorted = versions.sorted { $0.compare($1, options: .numeric) == .orderedAscending }
         guard let keep = sorted.last else { return [] }
-        log("DeviceSupport 保留最新: \(keep)\n")
+        log(String(localized: "log.deviceSupportKeep",
+                   defaultValue: "DeviceSupport: keeping the newest, \(keep)\n"))
         var trashed: [TrashedItem] = []
         for v in sorted where v != keep {
             let full = (base as NSString).appendingPathComponent(v)
             if let record = FileCleaner.moveToTrash(full) {
                 trashed.append(record)
-                log("已移到废纸篓 \(v)\n")
+                log(String(localized: "log.trashed", defaultValue: "Moved \(v) to the Trash\n"))
             } else {
-                log("跳过 \(v)：无法移到废纸篓\n")
+                log(String(localized: "log.trashFailed",
+                           defaultValue: "Skipped \(v): couldn’t move it to the Trash\n"))
             }
         }
         return trashed

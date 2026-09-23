@@ -16,10 +16,12 @@ struct CleanPane: View {
     var body: some View {
         VStack(spacing: 0) {
             PaneHeader(
-                title: "清理",
-                subtitle: "把可重建的开发缓存送进废纸篓",
+                title: String(localized: "clean.title", defaultValue: "Clean"),
+                subtitle: String(localized: "clean.subtitle",
+                                 defaultValue: "Send rebuildable development caches to the Trash"),
                 icon: "sparkles",
-                metric: "可用 \(byteString(vm.freeSpace))"
+                metric: String(localized: "clean.metric.free",
+                               defaultValue: "\(byteString(vm.freeSpace)) free")
             )
             Divider()
 
@@ -30,10 +32,10 @@ struct CleanPane: View {
                         if !rows.isEmpty {
                             VStack(alignment: .leading, spacing: 9) {
                                 HStack {
-                                    Text(category.rawValue)
+                                    Text(category.title)
                                         .font(.system(.headline, design: .rounded, weight: .semibold))
                                     Spacer()
-                                    Text("\(rows.filter { $0.isEnabled }.count) / \(rows.count)")
+                                    Text(verbatim: "\(rows.filter { $0.isEnabled }.count) / \(rows.count)")
                                         .font(.caption.monospacedDigit())
                                         .foregroundStyle(.secondary)
                                 }
@@ -64,13 +66,22 @@ struct CleanPane: View {
         .onChange(of: vm.isRunning) { _, running in
             if running { withAnimation(logAnimation) { showLog = true } }
         }
-        .confirmationDialog("开始本次维护？", isPresented: $showConfirm, titleVisibility: .visible) {
-            Button("开始清理（\(vm.selectedCount) 项）", role: .destructive) {
+        .confirmationDialog(
+            String(localized: "clean.confirm.title", defaultValue: "Start this maintenance run?"),
+            isPresented: $showConfirm,
+            titleVisibility: .visible
+        ) {
+            Button(
+                String(localized: "clean.confirm.start",
+                       defaultValue: "Start cleaning (\(vm.selectedCount) tasks)"),
+                role: .destructive
+            ) {
                 Task { await vm.run() }
             }
-            Button("取消", role: .cancel) {}
+            Button(String(localized: "common.cancel", defaultValue: "Cancel"), role: .cancel) {}
         } message: {
-            Text("文件型任务会移到废纸篓并写入恢复历史；命令型任务、清空废纸篓和 Docker prune 无法恢复。")
+            Text(String(localized: "clean.confirm.message",
+                        defaultValue: "File tasks move things to the Trash and record a restore point. Command tasks, emptying the Trash and Docker prune can’t be undone."))
         }
     }
 
@@ -82,7 +93,7 @@ struct CleanPane: View {
                 HStack(spacing: 7) {
                     Image(systemName: "chevron.right")
                         .rotationEffect(.degrees(showLog ? 90 : 0))
-                    Text("运行日志")
+                    Text(String(localized: "log.title", defaultValue: "Run log"))
                     if !showLog && !vm.log.isEmpty {
                         Circle().fill(CruftTheme.coral).frame(width: 6, height: 6)
                     }
@@ -99,7 +110,10 @@ struct CleanPane: View {
             ScrollViewReader { proxy in
                 ZStack(alignment: .bottom) {
                     ScrollView {
-                        Text(vm.log.isEmpty ? "任务输出会显示在这里。" : vm.log)
+                        Text(vm.log.isEmpty
+                             ? String(localized: "log.empty",
+                                      defaultValue: "Task output shows up here.")
+                             : vm.log)
                             .font(.system(.caption, design: .monospaced))
                             .foregroundStyle(vm.log.isEmpty ? .secondary : .primary)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -134,10 +148,12 @@ struct CleanPane: View {
                     .lineLimit(1)
             } else if vm.finished {
                 Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
-                Text("移到废纸篓 \(byteString(vm.movedToTrashBytes)) · 实际释放 \(byteString(vm.freedBytes))")
+                Text(String(localized: "clean.footer.result",
+                            defaultValue: "\(byteString(vm.movedToTrashBytes)) moved to the Trash · \(byteString(vm.freedBytes)) actually freed"))
                     .font(.callout.weight(.medium))
             } else {
-                Text("已选择 \(vm.selectedCount) 项")
+                Text(String(localized: "clean.footer.selected",
+                            defaultValue: "\(vm.selectedCount) tasks selected"))
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
@@ -149,7 +165,8 @@ struct CleanPane: View {
                 }
                 showConfirm = true
             } label: {
-                Label("开始维护", systemImage: "play.fill")
+                Label(String(localized: "clean.start", defaultValue: "Start maintenance"),
+                      systemImage: "play.fill")
             }
             .buttonStyle(AccentButtonStyle())
             .keyboardShortcut(.defaultAction)
@@ -185,19 +202,27 @@ struct ScanPane: View {
                 if vm.isScanning {
                     VStack(spacing: 12) {
                         ProgressView()
-                        Text("正在扫描…").foregroundStyle(.secondary)
+                        Text(String(localized: "scan.scanning", defaultValue: "Scanning…"))
+                            .foregroundStyle(.secondary)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else if !vm.hasScanned {
                     EmptyStateView(
                         icon: icon,
-                        title: "从一次安全扫描开始",
+                        title: String(localized: "scan.empty.title",
+                                      defaultValue: "Start with a safe scan"),
                         message: vm.mode == .projects
-                            ? "扫描 Works、Projects、Developer；最近 7 天使用过的项目默认不勾选。"
-                            : "扫描下载目录和桌面。安装包始终由你逐个选择。"
+                            ? String(localized: "scan.empty.projects",
+                                     defaultValue: "Scans Works, Projects and Developer. Projects touched in the last 7 days aren’t ticked by default.")
+                            : String(localized: "scan.empty.installers",
+                                     defaultValue: "Scans your Downloads folder and the Desktop. Installers are always yours to pick one by one.")
                     )
                 } else if vm.items.isEmpty {
-                    EmptyStateView(icon: "checkmark.seal", title: "这里很干净", message: emptyHint)
+                    EmptyStateView(
+                        icon: "checkmark.seal",
+                        title: String(localized: "scan.clean.title", defaultValue: "Nothing here"),
+                        message: emptyHint
+                    )
                 } else {
                     ScrollView {
                         LazyVStack(spacing: 9) {
@@ -213,14 +238,18 @@ struct ScanPane: View {
             Divider()
             HStack(spacing: 12) {
                 if vm.hasScanned {
-                    Text("选中 \(vm.selectedCount) 项 · \(byteString(vm.selectedBytes))")
+                    Text(String(localized: "scan.footer.selected",
+                                defaultValue: "\(vm.selectedCount) selected · \(byteString(vm.selectedBytes))"))
                         .font(.callout)
                         .foregroundStyle(.secondary)
                 } else {
-                    Text("尚未扫描").font(.callout).foregroundStyle(.secondary)
+                    Text(String(localized: "scan.footer.notscanned", defaultValue: "Not scanned yet"))
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
                 }
                 if vm.lastFailedCount > 0 {
-                    Text("· \(vm.lastFailedCount) 项移动失败")
+                    Text(String(localized: "scan.footer.failed",
+                                defaultValue: "· \(vm.lastFailedCount) failed to move"))
                         .font(.callout)
                         .foregroundStyle(.orange)
                 }
@@ -232,7 +261,10 @@ struct ScanPane: View {
                         requestFolderAccess()
                     }
                 } label: {
-                    Label(vm.hasScanned ? "重新扫描" : "扫描", systemImage: "arrow.clockwise")
+                    Label(vm.hasScanned
+                          ? String(localized: "scan.rescan", defaultValue: "Scan again")
+                          : String(localized: "scan.scan", defaultValue: "Scan"),
+                          systemImage: "arrow.clockwise")
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.large)
@@ -241,7 +273,8 @@ struct ScanPane: View {
                 Button {
                     showDeleteConfirm = true
                 } label: {
-                    Label("移到废纸篓", systemImage: "trash")
+                    Label(String(localized: "common.movetotrash", defaultValue: "Move to Trash"),
+                          systemImage: "trash")
                 }
                 .buttonStyle(AccentButtonStyle())
                 .disabled(vm.selectedCount == 0 || vm.isScanning || vm.isDeleting)
@@ -249,13 +282,21 @@ struct ScanPane: View {
             .padding(.horizontal, 24)
             .padding(.vertical, 16)
         }
-        .confirmationDialog("移到废纸篓？", isPresented: $showDeleteConfirm, titleVisibility: .visible) {
-            Button("移动 \(vm.selectedCount) 项", role: .destructive) {
+        .confirmationDialog(
+            String(localized: "scan.confirm.title", defaultValue: "Move to the Trash?"),
+            isPresented: $showDeleteConfirm,
+            titleVisibility: .visible
+        ) {
+            Button(
+                String(localized: "scan.confirm.move", defaultValue: "Move \(vm.selectedCount) items"),
+                role: .destructive
+            ) {
                 Task { _ = await vm.deleteSelected() }
             }
-            Button("取消", role: .cancel) {}
+            Button(String(localized: "common.cancel", defaultValue: "Cancel"), role: .cancel) {}
         } message: {
-            Text("将保存路径映射，可从“恢复历史”移回原位置；清空废纸篓后将无法恢复。")
+            Text(String(localized: "scan.confirm.message",
+                        defaultValue: "The path mapping is saved, so Restore History can move these back. Once the Trash is emptied they’re gone."))
         }
     }
 }
@@ -268,16 +309,21 @@ struct ApplicationsPane: View {
     var body: some View {
         VStack(spacing: 0) {
             PaneHeader(
-                title: "应用清理",
-                subtitle: "卸载应用，并审阅它留在用户目录中的关联文件",
+                title: String(localized: "apps.title", defaultValue: "App cleanup"),
+                subtitle: String(localized: "apps.subtitle",
+                                 defaultValue: "Uninstall an app and review what it left in your home folder"),
                 icon: "app.badge.checkmark",
-                metric: vm.hasScannedApps ? "\(vm.apps.count) 个应用" : nil
+                metric: vm.hasScannedApps
+                    ? String(localized: "apps.metric.count", defaultValue: "\(vm.apps.count) apps")
+                    : nil
             )
             Divider()
 
             HStack(spacing: 12) {
                 Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
-                TextField("搜索应用或 Bundle ID", text: $vm.query)
+                TextField(String(localized: "apps.search.prompt",
+                                 defaultValue: "Search apps or bundle IDs"),
+                          text: $vm.query)
                     .textFieldStyle(.plain)
                 Spacer()
                 if !vm.statusMessage.isEmpty {
@@ -292,7 +338,10 @@ struct ApplicationsPane: View {
                         requestFolderAccess()
                     }
                 } label: {
-                    Label(vm.hasScannedApps ? "重新扫描" : "扫描应用", systemImage: "arrow.clockwise")
+                    Label(vm.hasScannedApps
+                          ? String(localized: "scan.rescan", defaultValue: "Scan again")
+                          : String(localized: "apps.scan", defaultValue: "Scan apps"),
+                          systemImage: "arrow.clockwise")
                 }
                 .buttonStyle(.bordered)
                 .disabled(vm.isScanningApps)
@@ -306,18 +355,27 @@ struct ApplicationsPane: View {
                 if vm.isScanningApps {
                     VStack(spacing: 12) {
                         ProgressView()
-                        Text("正在读取应用与占用空间…")
+                        Text(String(localized: "apps.loading",
+                                    defaultValue: "Reading apps and the space they take…"))
                             .foregroundStyle(.secondary)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else if !vm.hasScannedApps {
                     EmptyStateView(
                         icon: "square.grid.2x2",
-                        title: "先建立应用清单",
-                        message: "读取 /Applications 和 ~/Applications。只有 Bundle ID 精确匹配的关联文件会默认选中。"
+                        title: String(localized: "apps.empty.title",
+                                      defaultValue: "Build the app list first"),
+                        message: String(localized: "apps.empty.message",
+                                        defaultValue: "Reads /Applications and ~/Applications. Only files matched by an exact bundle ID are ticked by default.")
                     )
                 } else if vm.filteredApps.isEmpty {
-                    EmptyStateView(icon: "magnifyingglass", title: "没有匹配的应用", message: "换一个名称或 Bundle ID 试试。")
+                    EmptyStateView(
+                        icon: "magnifyingglass",
+                        title: String(localized: "apps.nomatch.title",
+                                      defaultValue: "No app matches"),
+                        message: String(localized: "apps.nomatch.message",
+                                        defaultValue: "Try a different name or bundle ID.")
+                    )
                 } else {
                     ScrollView {
                         LazyVStack(spacing: 9) {
@@ -347,18 +405,21 @@ struct AppCleanupSheet: View {
             HStack(spacing: 14) {
                 AppIconView(path: app.path, size: 52)
                 VStack(alignment: .leading, spacing: 3) {
-                    Text("清理 \(app.name)")
+                    Text(String(localized: "appsheet.title", defaultValue: "Clean up \(app.name)"))
                         .font(.system(.title2, design: .rounded, weight: .bold))
-                    Text(app.bundleIdentifier.isEmpty ? "未读取到 Bundle ID，仅展示应用本体" : app.bundleIdentifier)
+                    Text(app.bundleIdentifier.isEmpty
+                         ? String(localized: "appsheet.nobundleid",
+                                  defaultValue: "No bundle ID was read; only the app itself is shown")
+                         : app.bundleIdentifier)
                         .font(.system(.caption, design: .monospaced))
                         .foregroundStyle(app.bundleIdentifier.isEmpty ? Color.orange : Color.secondary)
                         .textSelection(.enabled)
                 }
                 Spacer()
-                Button("在 Finder 中显示") {
+                Button(String(localized: "appsheet.finder", defaultValue: "Show in Finder")) {
                     NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: app.path)])
                 }
-                Button("关闭") { dismiss() }
+                Button(String(localized: "common.close", defaultValue: "Close")) { dismiss() }
             }
             .padding(20)
             Divider()
@@ -366,16 +427,22 @@ struct AppCleanupSheet: View {
             if vm.isScanningRelated {
                 VStack(spacing: 12) {
                     ProgressView()
-                    Text("正在匹配关联文件…").foregroundStyle(.secondary)
+                    Text(String(localized: "appsheet.matching",
+                                defaultValue: "Matching related files…"))
+                        .foregroundStyle(.secondary)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
-                            Label("精确匹配默认选中", systemImage: "checkmark.shield")
+                            Label(String(localized: "appsheet.legend.exact",
+                                         defaultValue: "Exact matches are ticked"),
+                                  systemImage: "checkmark.shield")
                             Spacer()
-                            Label("名称匹配需手动确认", systemImage: "exclamationmark.triangle")
+                            Label(String(localized: "appsheet.legend.name",
+                                         defaultValue: "Name matches need confirming"),
+                                  systemImage: "exclamationmark.triangle")
                         }
                         .font(.caption)
                         .foregroundStyle(.secondary)
@@ -391,7 +458,8 @@ struct AppCleanupSheet: View {
             Divider()
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("选中 \(vm.selectedCount) 项 · \(byteString(vm.selectedBytes))")
+                    Text(String(localized: "appsheet.selected",
+                                defaultValue: "\(vm.selectedCount) selected · \(byteString(vm.selectedBytes))"))
                         .font(.callout.weight(.medium))
                     if !vm.statusMessage.isEmpty {
                         Text(vm.statusMessage).font(.caption).foregroundStyle(.secondary)
@@ -401,7 +469,10 @@ struct AppCleanupSheet: View {
                 Button {
                     showConfirm = true
                 } label: {
-                    Label(vm.isDeleting ? "正在移动…" : "移到废纸篓", systemImage: "trash")
+                    Label(vm.isDeleting
+                          ? String(localized: "appsheet.moving", defaultValue: "Moving…")
+                          : String(localized: "common.movetotrash", defaultValue: "Move to Trash"),
+                          systemImage: "trash")
                 }
                 .buttonStyle(AccentButtonStyle())
                 .disabled(vm.selectedCount == 0 || vm.isScanningRelated || vm.isDeleting)
@@ -409,13 +480,21 @@ struct AppCleanupSheet: View {
             .padding(20)
         }
         .frame(minWidth: 720, minHeight: 540)
-        .confirmationDialog("卸载并清理？", isPresented: $showConfirm, titleVisibility: .visible) {
-            Button("移动 \(vm.selectedCount) 项", role: .destructive) {
+        .confirmationDialog(
+            String(localized: "appsheet.confirm.title", defaultValue: "Uninstall and clean up?"),
+            isPresented: $showConfirm,
+            titleVisibility: .visible
+        ) {
+            Button(
+                String(localized: "scan.confirm.move", defaultValue: "Move \(vm.selectedCount) items"),
+                role: .destructive
+            ) {
                 Task { await vm.moveSelectedToTrash() }
             }
-            Button("取消", role: .cancel) {}
+            Button(String(localized: "common.cancel", defaultValue: "Cancel"), role: .cancel) {}
         } message: {
-            Text("选中项将进入废纸篓并写入恢复历史。Cruft 不会强行获取管理员权限，受保护的应用可能移动失败。")
+            Text(String(localized: "appsheet.confirm.message",
+                        defaultValue: "The selected items go to the Trash and a restore point is recorded. Cruft won’t force its way to admin rights, so a protected app may fail to move."))
         }
     }
 }
@@ -428,20 +507,27 @@ struct BackgroundPane: View {
     var body: some View {
         VStack(spacing: 0) {
             PaneHeader(
-                title: "背景 App",
-                subtitle: "只读查看登录项、代理、守护进程和失效记录",
+                title: String(localized: "btm.title", defaultValue: "Background apps"),
+                subtitle: String(localized: "btm.subtitle",
+                                 defaultValue: "A read-only look at login items, agents, daemons and stale records"),
                 icon: "bolt.badge.clock",
-                metric: vm.hasLoaded ? "\(vm.items.count) 项" : nil
+                metric: vm.hasLoaded
+                    ? String(localized: "btm.metric.count", defaultValue: "\(vm.items.count) items")
+                    : nil
             )
             Divider()
 
             if vm.hasLoaded {
                 HStack(spacing: 12) {
                     Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
-                    TextField("搜索名称、开发者、Bundle ID", text: $vm.query)
+                    TextField(String(localized: "btm.search.prompt",
+                                     defaultValue: "Search names, developers, bundle IDs"),
+                              text: $vm.query)
                         .textFieldStyle(.plain)
                     if vm.orphanCount > 0 {
-                        Toggle("只看失效（\(vm.orphanCount)）", isOn: $vm.orphanOnly)
+                        Toggle(String(localized: "btm.orphanonly",
+                                      defaultValue: "Stale only (\(vm.orphanCount))"),
+                               isOn: $vm.orphanOnly)
                             .toggleStyle(.checkbox)
                     }
                 }
@@ -455,17 +541,26 @@ struct BackgroundPane: View {
                 if vm.isLoading {
                     VStack(spacing: 12) {
                         ProgressView()
-                        Text("正在读取系统背景活动…").foregroundStyle(.secondary)
+                        Text(String(localized: "btm.loading",
+                                    defaultValue: "Reading the system’s background activity…"))
+                            .foregroundStyle(.secondary)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else if !vm.hasLoaded {
                     EmptyStateView(
                         icon: "bolt.badge.clock",
-                        title: "查看谁在后台运行",
-                        message: "数据来自 sfltool dumpbtm；此页面只做观察，不直接修改系统记录。"
+                        title: String(localized: "btm.empty.title",
+                                      defaultValue: "See what runs in the background"),
+                        message: String(localized: "btm.empty.message",
+                                        defaultValue: "The data comes from sfltool dumpbtm. This pane only observes; it never edits the system’s records.")
                     )
                 } else if vm.filtered.isEmpty {
-                    EmptyStateView(icon: "checkmark.seal", title: "没有匹配项", message: "清除搜索或关闭失效过滤。")
+                    EmptyStateView(
+                        icon: "checkmark.seal",
+                        title: String(localized: "btm.nomatch.title", defaultValue: "No matches"),
+                        message: String(localized: "btm.nomatch.message",
+                                        defaultValue: "Clear the search or turn off the stale filter.")
+                    )
                 } else {
                     ScrollView {
                         LazyVStack(spacing: 9) {
@@ -479,7 +574,8 @@ struct BackgroundPane: View {
             Divider()
             HStack(spacing: 12) {
                 if vm.hasLoaded {
-                    Text("启用 \(vm.enabledCount) · 失效 \(vm.orphanCount)")
+                    Text(String(localized: "btm.footer",
+                                defaultValue: "\(vm.enabledCount) enabled · \(vm.orphanCount) stale"))
                         .font(.callout)
                         .foregroundStyle(.secondary)
                 }
@@ -489,7 +585,8 @@ struct BackgroundPane: View {
                         NSWorkspace.shared.open(url)
                     }
                 } label: {
-                    Label("系统设置", systemImage: "gear")
+                    Label(String(localized: "btm.systemsettings", defaultValue: "System Settings"),
+                          systemImage: "gear")
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.large)
@@ -501,7 +598,10 @@ struct BackgroundPane: View {
                         requestFolderAccess()
                     }
                 } label: {
-                    Label(vm.hasLoaded ? "刷新" : "读取", systemImage: "arrow.clockwise")
+                    Label(vm.hasLoaded
+                          ? String(localized: "btm.refresh", defaultValue: "Refresh")
+                          : String(localized: "btm.load", defaultValue: "Read"),
+                          systemImage: "arrow.clockwise")
                 }
                 .buttonStyle(AccentButtonStyle())
                 .disabled(vm.isLoading)
@@ -520,18 +620,23 @@ struct HistoryPane: View {
     var body: some View {
         VStack(spacing: 0) {
             PaneHeader(
-                title: "恢复历史",
-                subtitle: "把仍在废纸篓中的项目移回原位置",
+                title: String(localized: "history.title", defaultValue: "Restore history"),
+                subtitle: String(localized: "history.subtitle",
+                                 defaultValue: "Move items still in the Trash back where they came from"),
                 icon: "clock.arrow.circlepath",
-                metric: hasFolderAccess ? byteString(store.recoverableBytes) : "待授权"
+                metric: hasFolderAccess
+                    ? byteString(store.recoverableBytes)
+                    : String(localized: "history.metric.needauth", defaultValue: "Needs access")
             )
             Divider()
 
             if store.batches.isEmpty {
                 EmptyStateView(
                     icon: "clock.badge.checkmark",
-                    title: "还没有恢复记录",
-                    message: "项目产物、安装包、应用及文件型清理进入废纸篓后，会在这里留下恢复点。"
+                    title: String(localized: "history.empty.title",
+                                  defaultValue: "No restore points yet"),
+                    message: String(localized: "history.empty.message",
+                                    defaultValue: "Once build products, installers, apps and file-based cleanups go to the Trash, they leave a restore point here.")
                 )
             } else {
                 ScrollView {
@@ -585,11 +690,11 @@ struct HistoryBatchRow: View {
                 .frame(width: 42, height: 42)
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(batch.title).font(.headline)
+                    Text(batch.displayTitle).font(.headline)
                     Text(batch.createdAt.formatted(date: .abbreviated, time: .shortened))
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                    Text(batch.tasks.joined(separator: " · "))
+                    Text(batch.displayTasks.joined(separator: " · "))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
@@ -599,13 +704,15 @@ struct HistoryBatchRow: View {
                     Text(byteString(batch.totalBytes))
                         .font(.system(.callout, design: .monospaced, weight: .semibold))
                     Text(hasFolderAccess
-                         ? "\(store.recoverableCount(in: batch)) / \(batch.items.count) 项可恢复"
-                         : "授权后检查可恢复状态")
+                         ? String(localized: "history.recoverable",
+                                  defaultValue: "\(store.recoverableCount(in: batch)) of \(batch.items.count) can be restored")
+                         : String(localized: "history.needauth",
+                                  defaultValue: "Grant access to check what can be restored"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
 
-                Button("恢复") {
+                Button(String(localized: "history.restore", defaultValue: "Restore")) {
                     if hasFolderAccess {
                         showRestoreConfirm = true
                     } else {
@@ -616,7 +723,10 @@ struct HistoryBatchRow: View {
                     .disabled((hasFolderAccess && store.recoverableCount(in: batch) == 0) || store.isRestoring)
 
                 Menu {
-                    Button("只移除记录") { store.forget(batch) }
+                    Button(String(localized: "history.forget",
+                                  defaultValue: "Remove the record only")) {
+                        store.forget(batch)
+                    }
                 } label: {
                     Image(systemName: "ellipsis")
                 }
@@ -624,13 +734,19 @@ struct HistoryBatchRow: View {
                 .frame(width: 24)
             }
         }
-        .confirmationDialog("恢复到原位置？", isPresented: $showRestoreConfirm, titleVisibility: .visible) {
-            Button("恢复 \(store.recoverableCount(in: batch)) 项") {
+        .confirmationDialog(
+            String(localized: "history.confirm.title", defaultValue: "Restore to the original location?"),
+            isPresented: $showRestoreConfirm,
+            titleVisibility: .visible
+        ) {
+            Button(String(localized: "history.confirm.restore",
+                          defaultValue: "Restore \(store.recoverableCount(in: batch)) items")) {
                 Task { await store.restore(batch) }
             }
-            Button("取消", role: .cancel) {}
+            Button(String(localized: "common.cancel", defaultValue: "Cancel"), role: .cancel) {}
         } message: {
-            Text("如果原位置已经存在同名文件，Cruft 会保留现有文件并跳过该项目。")
+            Text(String(localized: "history.confirm.message",
+                        defaultValue: "If a file of the same name is already there, Cruft keeps the existing file and skips that item."))
         }
     }
 }

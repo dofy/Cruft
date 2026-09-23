@@ -23,7 +23,7 @@ struct CruftApp: App {
     }
 
     var body: some Scene {
-        Window("Cruft", id: "main") {
+        Window(String(localized: "app.name", defaultValue: "Cruft"), id: "main") {
             ContentView()
                 .frame(minWidth: 900, idealWidth: 1020, minHeight: 620, idealHeight: 760)
         }

@@ -122,8 +122,12 @@ final class CleanerViewModel: ObservableObject {
         isRunning = false
         finished = true
         DeletionHistoryStore.shared.record(
-            title: "常规清理",
+            title: String(localized: "history.batch.routine", defaultValue: "Routine cleanup"),
             tasks: selected.map(\.kind.title),
+            titleKey: DeletionBatch.routineKey,
+            // 存 rawValue 而不是已翻译的标题：标题会进 JSON，换语言后老记录就成了
+            // 另一种语言的残留。rawValue 稳定，显示时再换成当前语言的 title。
+            taskKeys: selected.map(\.kind.rawValue),
             items: trashedItems
         )
         writeHistory(
@@ -139,7 +143,8 @@ final class CleanerViewModel: ObservableObject {
         let freedStr = ByteCountFormatter.string(fromByteCount: freed, countStyle: .file)
         let trashedStr = ByteCountFormatter.string(fromByteCount: movedToTrash, countStyle: .file)
         let stamp = ISO8601DateFormatter().string(from: Date())
-        let line = "[\(stamp)] 释放 \(freedStr) | 移到废纸篓 \(trashedStr) | \(tasks.joined(separator: ", "))\n"
+        // 诊断日志，不面向用户，格式保持固定不随界面语言变。
+        let line = "[\(stamp)] freed \(freedStr) | trashed \(trashedStr) | \(tasks.joined(separator: ", "))\n"
         Task.detached(priority: .utility) {
             let fm = FileManager.default
             let dir = ("~/Library/Logs/Cruft" as NSString).expandingTildeInPath

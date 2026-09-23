@@ -19,8 +19,10 @@
 		60A61F053D0DD8CD139E20A5 /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCE2224B7E3902E51E8A2A26 /* DesignSystem.swift */; };
 		70EDB643DC517A7E58F576F1 /* Scanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8883DA2406508E99A231FC4A /* Scanner.swift */; };
 		78053666518A9986EE32D6DB /* FeatureViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6E79365CDA8837002A4B29C /* FeatureViews.swift */; };
+		7912F56C72FB8F7887EDAE71 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 4493F5F3D3CFB1C04BC09D95 /* InfoPlist.xcstrings */; };
 		7C9FBBA8B3B0C09C3EBEDE8C /* BTM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 131A0067A788DD1E13A1BE25 /* BTM.swift */; };
 		7DBA7385CD34EFB4491C0690 /* Shell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A84419596D61A0062D5F87 /* Shell.swift */; };
+		91AA425FB3D256844751D8A6 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 1145E8819BA2A896176BF39A /* Localizable.xcstrings */; };
 		C7DF909FC0E0240F85B94D82 /* CleanerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0969070B6A9CCDA359AD9705 /* CleanerEngine.swift */; };
 		EC3AA8C53E7F24225287A7BA /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7BC56FF3C179BAD3CA62F8 /* Models.swift */; };
 /* End PBXBuildFile section */
@@ -39,11 +41,13 @@
 		093A6CE955BB4879DC959A91 /* FolderAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderAccess.swift; sourceTree = "<group>"; };
 		0969070B6A9CCDA359AD9705 /* CleanerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanerEngine.swift; sourceTree = "<group>"; };
 		0F7C88CE32421E67DE7F994D /* AppCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCleaner.swift; sourceTree = "<group>"; };
+		1145E8819BA2A896176BF39A /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		131A0067A788DD1E13A1BE25 /* BTM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTM.swift; sourceTree = "<group>"; };
 		1A2AD28DAB896ACEDD9BFF87 /* CruftApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CruftApp.swift; sourceTree = "<group>"; };
 		2A6D951A1D0DFC1941C3A4F5 /* CruftTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CruftTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4080178BDA8592059C574C8F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		43A5BE3757D6ADDE6E2B415A /* CleanerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanerViewModel.swift; sourceTree = "<group>"; };
+		4493F5F3D3CFB1C04BC09D95 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		8883DA2406508E99A231FC4A /* Scanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scanner.swift; sourceTree = "<group>"; };
 		96E59D13C5E77C8F7B71FEDB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9C7BC56FF3C179BAD3CA62F8 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
@@ -80,6 +84,8 @@
 				CCE2224B7E3902E51E8A2A26 /* DesignSystem.swift */,
 				E6E79365CDA8837002A4B29C /* FeatureViews.swift */,
 				093A6CE955BB4879DC959A91 /* FolderAccess.swift */,
+				4493F5F3D3CFB1C04BC09D95 /* InfoPlist.xcstrings */,
+				1145E8819BA2A896176BF39A /* Localizable.xcstrings */,
 				9C7BC56FF3C179BAD3CA62F8 /* Models.swift */,
 				E7A2AC8C70B36DB0D2A2CAF6 /* RowViews.swift */,
 				8883DA2406508E99A231FC4A /* Scanner.swift */,
@@ -167,6 +173,8 @@
 			knownRegions = (
 				Base,
 				en,
+				"zh-Hans",
+				"zh-Hant",
 			);
 			mainGroup = B0BBF0C17D75ABA4B5CD5922;
 			minimizedProjectReferenceProxies = 1;
@@ -187,6 +195,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				0B989148485F61612B53EE02 /* Assets.xcassets in Resources */,
+				7912F56C72FB8F7887EDAE71 /* InfoPlist.xcstrings in Resources */,
+				91AA425FB3D256844751D8A6 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -411,11 +421,11 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Cruft;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSMinimumSystemVersion = 14.0;
-				INFOPLIST_KEY_NSDesktopFolderUsageDescription = "Cruft 仅在你主动扫描时读取桌面上的安装包。";
-				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = "Cruft 仅在你主动选择项目扫描时读取文稿目录。";
-				INFOPLIST_KEY_NSDownloadsFolderUsageDescription = "Cruft 仅在你主动扫描时读取下载目录中的安装包。";
+				INFOPLIST_KEY_NSDesktopFolderUsageDescription = "Cruft reads installers on the Desktop only when you start a scan yourself.";
+				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = "Cruft reads your Documents folder only when you start a project scan yourself.";
+				INFOPLIST_KEY_NSDownloadsFolderUsageDescription = "Cruft reads installers in your Downloads folder only when you start a scan yourself.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "MIT License";
-				INFOPLIST_KEY_NSSystemAdministrationUsageDescription = "Cruft 需要完全磁盘访问来检查开发缓存、日志、应用残留和废纸篓。";
+				INFOPLIST_KEY_NSSystemAdministrationUsageDescription = "Cruft needs Full Disk Access to inspect development caches, logs, app leftovers and the Trash.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -436,11 +446,11 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Cruft;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSMinimumSystemVersion = 14.0;
-				INFOPLIST_KEY_NSDesktopFolderUsageDescription = "Cruft 仅在你主动扫描时读取桌面上的安装包。";
-				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = "Cruft 仅在你主动选择项目扫描时读取文稿目录。";
-				INFOPLIST_KEY_NSDownloadsFolderUsageDescription = "Cruft 仅在你主动扫描时读取下载目录中的安装包。";
+				INFOPLIST_KEY_NSDesktopFolderUsageDescription = "Cruft reads installers on the Desktop only when you start a scan yourself.";
+				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = "Cruft reads your Documents folder only when you start a project scan yourself.";
+				INFOPLIST_KEY_NSDownloadsFolderUsageDescription = "Cruft reads installers in your Downloads folder only when you start a scan yourself.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "MIT License";
-				INFOPLIST_KEY_NSSystemAdministrationUsageDescription = "Cruft 需要完全磁盘访问来检查开发缓存、日志、应用残留和废纸篓。";
+				INFOPLIST_KEY_NSSystemAdministrationUsageDescription = "Cruft needs Full Disk Access to inspect development caches, logs, app leftovers and the Trash.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",

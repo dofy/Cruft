@@ -33,18 +33,23 @@ struct BTMItem: Identifiable, Hashable {
             .replacingOccurrences(of: "legacy ", with: "")
     }
 
+    // typeKey 是 dumpbtm 的输出，是**解析键**不是文案；这里把它映射成当前语言的标签。
     var typeLabel: String {
         switch typeKey {
-        case "app": return "应用程序"
-        case "login item": return "登录项"
-        case "agent": return "代理"
-        case "daemon": return "守护进程"
-        case "developer": return "开发者"
-        case "background tasks": return "背景任务"
+        case "app": return String(localized: "btm.type.app", defaultValue: "Application")
+        case "login item": return String(localized: "btm.type.loginItem", defaultValue: "Login item")
+        case "agent": return String(localized: "btm.type.agent", defaultValue: "Agent")
+        case "daemon": return String(localized: "btm.type.daemon", defaultValue: "Daemon")
+        case "developer": return String(localized: "btm.type.developer", defaultValue: "Developer")
+        case "background tasks":
+            return String(localized: "btm.type.backgroundTasks", defaultValue: "Background tasks")
         case "quicklook": return "Quick Look"
-        case "dock tile": return "Dock 磁贴"
+        case "dock tile": return String(localized: "btm.type.dockTile", defaultValue: "Dock tile")
         case "spotlight": return "Spotlight"
-        default: return typeKey.isEmpty ? "其他" : typeKey
+        default:
+            return typeKey.isEmpty
+                ? String(localized: "btm.type.other", defaultValue: "Other")
+                : typeKey
         }
     }
 

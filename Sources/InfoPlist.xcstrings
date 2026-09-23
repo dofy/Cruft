@@ -1,0 +1,98 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "NSDesktopFolderUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cruft reads installers on the Desktop only when you start a scan yourself."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cruft 仅在你主动扫描时读取桌面上的安装包。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cruft 只在你主動掃描時，才讀取桌面上的安裝檔。"
+          }
+        }
+      }
+    },
+    "NSDocumentsFolderUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cruft reads your Documents folder only when you start a project scan yourself."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cruft 仅在你主动选择项目扫描时读取文稿目录。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cruft 只在你主動選擇專案掃描時，才讀取「文件」資料夾。"
+          }
+        }
+      }
+    },
+    "NSDownloadsFolderUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cruft reads installers in your Downloads folder only when you start a scan yourself."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cruft 仅在你主动扫描时读取下载目录中的安装包。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cruft 只在你主動掃描時，才讀取「下載」資料夾中的安裝檔。"
+          }
+        }
+      }
+    },
+    "NSSystemAdministrationUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cruft needs Full Disk Access to inspect development caches, logs, app leftovers and the Trash."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cruft 需要完全磁盘访问来检查开发缓存、日志、应用残留和废纸篓。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cruft 需要完全取用磁碟權限，才能檢查開發快取、記錄、App 殘留與垃圾桶。"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

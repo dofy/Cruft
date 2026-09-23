@@ -158,10 +158,14 @@ final class ScanViewModel: ObservableObject {
         lastFailedCount = targets.count - trashed.count
         isDeleting = false
 
-        let title = mode == .projects ? "项目产物" : "安装包"
+        let isProjects = mode == .projects
         DeletionHistoryStore.shared.record(
-            title: title,
-            tasks: ["移到废纸篓"],
+            title: isProjects
+                ? String(localized: "history.batch.projects", defaultValue: "Build products")
+                : String(localized: "history.batch.installers", defaultValue: "Installers"),
+            tasks: [String(localized: "history.task.trash", defaultValue: "Moved to the Trash")],
+            titleKey: isProjects ? DeletionBatch.projectsKey : DeletionBatch.installersKey,
+            taskKeys: [DeletionBatch.taskTrashKey],
             items: trashed
         )
         return lastFreed

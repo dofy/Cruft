@@ -58,18 +58,25 @@ struct FolderAccessBanner: View {
                 .frame(width: 24)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(isChecking ? "正在检查文件访问权限" : "文件访问尚未开启")
+                Text(isChecking
+                     ? String(localized: "access.banner.checking",
+                              defaultValue: "Checking file access")
+                     : String(localized: "access.banner.off",
+                              defaultValue: "File access isn’t on yet"))
                     .font(.callout.weight(.semibold))
                 Text(isChecking
-                     ? "检查完成前不会读取任何清理目录。"
-                     : "Cruft 尚未扫描缓存、日志、项目、下载或废纸篓。")
+                     ? String(localized: "access.banner.checking.body",
+                              defaultValue: "Nothing is read until the check finishes.")
+                     : String(localized: "access.banner.off.body",
+                              defaultValue: "Cruft hasn’t scanned caches, logs, projects, downloads or the Trash."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
 
             Spacer()
             if !isChecking {
-                Button("开启访问", action: showDetails)
+                Button(String(localized: "access.banner.enable", defaultValue: "Turn on access"),
+                       action: showDetails)
                     .buttonStyle(.borderedProminent)
                     .tint(CruftTheme.coral)
             }
@@ -98,48 +105,66 @@ struct FolderAccessSheet: View {
                 .frame(width: 52, height: 52)
 
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(manager.hasFullDiskAccess ? "文件访问已开启" : "开启完全磁盘访问")
+                    Text(manager.hasFullDiskAccess
+                         ? String(localized: "access.sheet.title.on",
+                                  defaultValue: "File access is on")
+                         : String(localized: "access.sheet.title.off",
+                                  defaultValue: "Turn on Full Disk Access"))
                         .font(.system(.title2, design: .rounded, weight: .bold))
-                    Text("由 macOS 管理，可随时在系统设置中关闭")
+                    Text(String(localized: "access.sheet.subtitle",
+                                defaultValue: "macOS manages this, and you can turn it off in System Settings at any time"))
                         .font(.callout)
                         .foregroundStyle(.secondary)
                 }
             }
 
-            Text("Cruft 需要读取用户目录中的开发缓存、日志、项目产物、下载文件和废纸篓，才能估算空间并执行你确认的清理。文件内容只在本机处理，不会上传。")
+            Text(String(localized: "access.sheet.body",
+                        defaultValue: "Cruft has to read the development caches, logs, build products, downloads and Trash in your home folder to estimate what they take up and to run the cleanups you confirm. File contents are processed on this machine and never uploaded."))
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
 
             SurfaceCard {
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("授权步骤")
+                    Text(String(localized: "access.sheet.steps", defaultValue: "How to grant it"))
                         .font(.callout.weight(.semibold))
                         .foregroundStyle(.primary)
-                    Label("打开“隐私与安全性 → 完全磁盘访问”", systemImage: "1.circle.fill")
-                    Label("添加或开启 /Applications/Cruft.app", systemImage: "2.circle.fill")
-                    Label("返回 Cruft；应用会自动重新检查", systemImage: "3.circle.fill")
+                    Label(String(localized: "access.sheet.step1",
+                                 defaultValue: "Open Privacy & Security → Full Disk Access"),
+                          systemImage: "1.circle.fill")
+                    Label(String(localized: "access.sheet.step2",
+                                 defaultValue: "Add or switch on /Applications/Cruft.app"),
+                          systemImage: "2.circle.fill")
+                    Label(String(localized: "access.sheet.step3",
+                                 defaultValue: "Come back to Cruft; it re-checks by itself"),
+                          systemImage: "3.circle.fill")
                 }
                 .font(.caption)
                 .foregroundStyle(.secondary)
             }
 
-            Label("未授权时，Cruft 不会扫描清理目录。", systemImage: "lock.shield")
+            Label(String(localized: "access.sheet.note",
+                         defaultValue: "Without access, Cruft doesn’t scan anything."),
+                  systemImage: "lock.shield")
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
             HStack {
-                Button("关闭") { dismiss() }
+                Button(String(localized: "common.close", defaultValue: "Close")) { dismiss() }
                     .keyboardShortcut(.cancelAction)
                 Spacer()
                 Button {
                     manager.check()
                 } label: {
-                    Label(manager.isChecking ? "正在检查…" : "重新检查", systemImage: "arrow.clockwise")
+                    Label(manager.isChecking
+                          ? String(localized: "access.sheet.checking", defaultValue: "Checking…")
+                          : String(localized: "access.sheet.recheck", defaultValue: "Check again"),
+                          systemImage: "arrow.clockwise")
                 }
                 .disabled(manager.isChecking)
 
                 if !manager.hasFullDiskAccess {
-                    Button("打开系统设置") {
+                    Button(String(localized: "common.opensystemsettings",
+                                  defaultValue: "Open System Settings")) {
                         manager.openSystemSettings()
                     }
                     .buttonStyle(AccentButtonStyle())
