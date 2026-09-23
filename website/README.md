@@ -25,6 +25,20 @@ pnpm run deploy
 > `pnpm deploy` 是 pnpm 自己的内置命令（把工作区包部署到一个目录），会直接报
 > `ERR_PNPM_INVALID_DEPLOY_TARGET`。必须写 `pnpm run deploy` 才会跑 package.json 里的脚本。
 
+## 站点只介绍产品
+
+**不要在站上出现技术信息。** 不放构建步骤、命令、路径、依赖名和实现细节（SwiftUI、
+SwiftData、GRDB、ECDICT、SM-2、Vision、Keychain、`~/Library/...` 这类一律不出现）。
+产品范围内的名字可以留——Cruft 说清它清哪些工具链、LinguaDock 说清它接哪种模型服务，
+那是用户要知道的东西，不是实现细节。
+
+**wordclip 是私有 repo**，它的站上不能出现任何 `github.com/dofy/wordclip` 链接或
+「开源 / MIT」字样——对访客是 404。Cruft 和 LinguaDock 是公开的，页头页脚的 GitHub
+与 issue 链接保留，当反馈渠道。
+
+三个站都没有 release，所以页尾是一个「即将推出」状态区（`.release`），不是下载按钮。
+真的有下载之后再换成按钮。
+
 ## 三语页面
 
 每种语言一个独立静态页，而不是运行时切文案——营销页要让搜索引擎分别收录。
@@ -54,5 +68,7 @@ pnpm run deploy
 - `.traffic-lights` 和 `.terminal-bar` 的圆点是**同一条规则**。改 hero 的 mock 时别顺手把它
   删了，否则安装命令那个终端卡的圆点会一起没。
 - hero 里的数字（8.4 GB / 13.3 GB / 238 GB）是示意值，不是真实测量结果。
+- 三个站**只共享视觉系统**（token、页头、区块节奏、按钮、深色面板、页脚、媒体查询），
+  区块结构不必一致，各站按自己的产品来排。
 - `public/app-icon.png` 是从 `Sources/Assets.xcassets/AppIcon.appiconset/icon_512.png`
   拷来的。换图标时记得同步。

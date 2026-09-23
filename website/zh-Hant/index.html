@@ -35,6 +35,7 @@
         <a href="#workflow">使用方式</a>
         <a href="#targets">清理什麼</a>
         <a href="#safety">安全性</a>
+        <a href="#get">上市狀態</a>
       </nav>
       <div class="header-end">
         <nav class="lang-switch" aria-label="語言">
@@ -71,9 +72,9 @@
               rel="noreferrer"
               >在 GitHub 查看專案</a
             >
-            <a class="button button-secondary" href="#start">查看安裝方式</a>
+            <a class="button button-secondary" href="#get">什麼時候能用</a>
           </div>
-          <p class="hero-meta">macOS 14+ · SwiftUI · MIT License</p>
+          <p class="hero-meta">macOS 14 以上</p>
         </div>
 
         <div class="hero-demo" aria-label="一次清理的流程示範">
@@ -184,7 +185,7 @@
               另外兩個掃描器專門找長期沒動的 <em>node_modules</em> 目錄，
               以及還堆在「下載」資料夾裡的安裝檔。
             </p>
-            <code>~/Library/Developer/Xcode/DerivedData</code>
+            <code>11 條工具鏈 · 每一位元組都可重建</code>
           </article>
           <article>
             <span class="option-symbol" aria-hidden="true">◍</span>
@@ -194,7 +195,7 @@
               image、建置快取、已停止的容器和沒有掛載的 volume、垃圾桶本身——
               還有一個 App 清理頁，按 Bundle ID 找出移除掉的 App 留下了什麼。
             </p>
-            <code>~/Library/Caches · ~/Library/Logs · ~/.Trash</code>
+            <code>快取 · 記錄 · 殘留 · 垃圾桶</code>
           </article>
         </div>
       </section>
@@ -208,15 +209,15 @@
           <div>
             <h3>體積估算</h3>
             <p>
-              逐項顯示目前佔用，在主執行緒之外計算，每次跑完重新刷新，
+              動手之前每一項都先估一遍，跑完再量一次，
               所以數字不會過期。
             </p>
           </div>
           <div>
             <h3>逐項細節</h3>
             <p>
-              每一行一個彈出層，寫明確切的路徑或指令。任務不會做任何
-              彈出層裡沒告訴你的事。
+              點開任一行的細節，它會寫清這個任務到底要碰什麼。
+              沒有哪件事是它沒先告訴你的。
             </p>
           </div>
           <div>
@@ -228,8 +229,8 @@
           <div>
             <h3>還原記錄</h3>
             <p>
-              最多保留二十批「原路徑 → 垃圾桶路徑」的對應，
-              檔案還在垃圾桶裡時一鍵還原。
+              最近二十次清理都留在列表裡，只要檔案還在垃圾桶，
+              任何一次都能一鍵放回原處。
             </p>
           </div>
         </div>
@@ -242,37 +243,29 @@
         <div>
           <h2>它把檔案移到垃圾桶，不是刪掉。</h2>
           <p>
-            檔案型清理一律經垃圾桶並寫入還原點，所以手一抖的代價是點一下，
-            而不是一個下午。Cruft 不安裝任何特權 helper——受保護的 App 會被回報為
-            失敗，而不是繞過去提權。清理目標只在你自己擁有的位置，絕不碰
-            <code>/Library</code> 或 <code>/System</code>。指令型任務、清空垃圾桶
-            和 Docker prune 是例外，執行前 App 會明說。
+            檔案清理一律經垃圾桶並留下還原點，所以手一抖的代價是點一下，
+            而不是一個下午。Cruft 從不索取管理者權限——搬不動的東西它如實回報，
+            而不是繞過去。它只碰屬於你的東西，絕不動系統自己的檔案。清空垃圾桶
+            和少數幾個直接呼叫工具的任務無法復原，執行前 App 會明說。
           </p>
         </div>
       </section>
 
-      <section class="start section" id="start">
-        <div>
-          <h2>建置出來，然後給它授權。</h2>
+      <section class="release section" id="get">
+        <div class="release-copy">
+          <h2>還沒發佈。</h2>
           <p>
-            開源、沒有安裝程式、沒有遙測。它只要一個權限——完全取用磁碟，
-            而且這項檢查通過之前它什麼都不掃。
+            沒有安裝程式，沒有遙測，不用註冊帳號。它只會索取一個權限——完全取用
+            磁碟，而且你不給，它什麼都不掃。
           </p>
         </div>
-        <div class="terminal" aria-label="安裝指令">
-          <div class="terminal-bar"><span></span><span></span><span></span></div>
-          <pre><code>git clone https://github.com/dofy/Cruft.git
-cd Cruft
-xcodegen generate
-./Scripts/install-local.sh</code></pre>
+        <div class="release-card">
+          <span class="release-badge">即將推出</span>
+          <p>
+            可下載的版本正在準備。在那之前專案在 GitHub 上公開，
+            想讓它清什麼，去 issue 裡說。
+          </p>
         </div>
-        <a
-          class="button button-primary"
-          href="https://github.com/dofy/Cruft/blob/main/README.zh-Hant.md#建置與執行"
-          target="_blank"
-          rel="noreferrer"
-          >打開完整安裝說明</a
-        >
       </section>
     </main>
 
@@ -285,7 +278,6 @@ xcodegen generate
       <div class="footer-links">
         <a href="https://github.com/dofy/Cruft">GitHub</a>
         <a href="https://github.com/dofy/Cruft/issues">問題回報</a>
-        <a href="https://github.com/dofy/Cruft/blob/main/LICENSE">MIT License</a>
       </div>
       <p class="copyright">© <span id="year">2026</span> Cruft</p>
     </footer>

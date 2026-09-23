@@ -35,6 +35,7 @@
         <a href="#workflow">使用方式</a>
         <a href="#targets">清理什么</a>
         <a href="#safety">安全性</a>
+        <a href="#get">上市状态</a>
       </nav>
       <div class="header-end">
         <nav class="lang-switch" aria-label="语言">
@@ -71,9 +72,9 @@
               rel="noreferrer"
               >在 GitHub 查看项目</a
             >
-            <a class="button button-secondary" href="#start">查看安装方式</a>
+            <a class="button button-secondary" href="#get">什么时候能用</a>
           </div>
-          <p class="hero-meta">macOS 14+ · SwiftUI · MIT License</p>
+          <p class="hero-meta">macOS 14 及以上</p>
         </div>
 
         <div class="hero-demo" aria-label="一次清理的流程演示">
@@ -184,7 +185,7 @@
               另外两个扫描器专门找长期未动的 <em>node_modules</em> 目录，
               以及还堆在下载目录里的安装包。
             </p>
-            <code>~/Library/Developer/Xcode/DerivedData</code>
+            <code>11 条工具链 · 每一字节都可重建</code>
           </article>
           <article>
             <span class="option-symbol" aria-hidden="true">◍</span>
@@ -194,7 +195,7 @@
               构建缓存、已停止的容器和未挂载的 volume、废纸篓本身——
               还有一个应用清理页，按 Bundle ID 找出卸载掉的应用留下了什么。
             </p>
-            <code>~/Library/Caches · ~/Library/Logs · ~/.Trash</code>
+            <code>缓存 · 日志 · 残留 · 废纸篓</code>
           </article>
         </div>
       </section>
@@ -208,15 +209,15 @@
           <div>
             <h3>体积估算</h3>
             <p>
-              逐项显示当前占用，在主线程之外计算，每次跑完重新刷新，
+              动手之前每一项都先估一遍，跑完再量一次，
               所以数字不会过期。
             </p>
           </div>
           <div>
             <h3>逐项详情</h3>
             <p>
-              每行一个弹出层，写明确切的路径或命令。任务不会做任何
-              弹出层里没告诉你的事。
+              点开任一行的详情，它会写清这个任务到底要碰什么。
+              没有哪件事是它没先告诉你的。
             </p>
           </div>
           <div>
@@ -228,8 +229,8 @@
           <div>
             <h3>恢复历史</h3>
             <p>
-              最多保留二十批「原路径 → 废纸篓路径」的映射，
-              文件还在废纸篓里时一键恢复。
+              最近二十次清理都留在列表里，只要文件还在废纸篓，
+              任何一次都能一键放回原处。
             </p>
           </div>
         </div>
@@ -242,37 +243,29 @@
         <div>
           <h2>它把文件移到废纸篓，不是删掉。</h2>
           <p>
-            文件型清理一律经废纸篓并写入恢复点，所以手一抖的代价是点一下，
-            而不是一个下午。Cruft 不安装任何特权 helper——受保护的应用会被报为
-            失败，而不是绕过去提权。清理目标只在你自己拥有的位置，绝不碰
-            <code>/Library</code> 或 <code>/System</code>。命令型任务、清空废纸篓
-            和 Docker prune 是例外，运行前 App 会明说。
+            文件清理一律经废纸篓并留下恢复点，所以手一抖的代价是点一下，
+            而不是一个下午。Cruft 从不索取管理员权限——搬不动的东西它如实报错，
+            而不是绕过去。它只碰属于你的东西，绝不动系统自己的文件。清空废纸篓
+            和少数几个直接调用工具的任务无法撤销，运行前 App 会明说。
           </p>
         </div>
       </section>
 
-      <section class="start section" id="start">
-        <div>
-          <h2>构建出来，然后给它授权。</h2>
+      <section class="release section" id="get">
+        <div class="release-copy">
+          <h2>还没发布。</h2>
           <p>
-            开源、无安装器、无遥测。它只要一个权限——完全磁盘访问，
-            而且这项检查通过之前它什么都不扫。
+            没有安装器，没有遥测，不用注册账号。它只会索取一个权限——完全磁盘
+            访问，而且你不给，它什么都不扫。
           </p>
         </div>
-        <div class="terminal" aria-label="安装命令">
-          <div class="terminal-bar"><span></span><span></span><span></span></div>
-          <pre><code>git clone https://github.com/dofy/Cruft.git
-cd Cruft
-xcodegen generate
-./Scripts/install-local.sh</code></pre>
+        <div class="release-card">
+          <span class="release-badge">即将推出</span>
+          <p>
+            可下载的版本正在准备。在那之前项目在 GitHub 上公开，
+            想让它清点什么，去 issue 里说。
+          </p>
         </div>
-        <a
-          class="button button-primary"
-          href="https://github.com/dofy/Cruft/blob/main/README.zh-Hans.md#构建与运行"
-          target="_blank"
-          rel="noreferrer"
-          >打开完整安装说明</a
-        >
       </section>
     </main>
 
@@ -285,7 +278,6 @@ xcodegen generate
       <div class="footer-links">
         <a href="https://github.com/dofy/Cruft">GitHub</a>
         <a href="https://github.com/dofy/Cruft/issues">问题反馈</a>
-        <a href="https://github.com/dofy/Cruft/blob/main/LICENSE">MIT License</a>
       </div>
       <p class="copyright">© <span id="year">2026</span> Cruft</p>
     </footer>

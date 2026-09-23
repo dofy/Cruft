@@ -342,14 +342,12 @@ h1 span {
   font-size: 12px;
 }
 
-.traffic-lights,
-.terminal-bar {
+.traffic-lights {
   display: flex;
   gap: 6px;
 }
 
-.traffic-lights i,
-.terminal-bar span {
+.traffic-lights i {
   width: 8px;
   height: 8px;
   display: block;
@@ -357,8 +355,7 @@ h1 span {
   background: #d5d0cb;
 }
 
-.traffic-lights i:first-child,
-.terminal-bar span:first-child {
+.traffic-lights i:first-child {
   background: var(--coral);
 }
 
@@ -471,7 +468,7 @@ h2 {
 
 .section-heading > p,
 .detail-intro > p,
-.start > div:first-child p {
+.release-copy > p {
   color: var(--muted);
   font-size: 18px;
 }
@@ -659,37 +656,48 @@ h2 {
   background: transparent;
 }
 
-.start {
+/* 上市状态区。取代原来那块装安装命令的终端卡 —— 站点只介绍产品，
+   不放构建步骤。 */
+.release {
   display: grid;
-  grid-template-columns: 0.8fr 1.2fr;
+  grid-template-columns: 0.9fr 1.1fr;
   align-items: center;
   gap: 70px;
 }
 
-.start > .button {
-  grid-column: 2;
+.release-card {
+  padding: 46px 50px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.release-badge {
   width: fit-content;
-  margin-top: -34px;
+  margin-bottom: 22px;
+  padding: 8px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  border-radius: 999px;
+  background: var(--coral-soft);
+  color: var(--coral-deep);
+  font-size: 14px;
+  font-weight: 700;
 }
 
-.terminal {
-  overflow: hidden;
-  border: 1px solid #34312e;
-  border-radius: 18px;
-  background: #1e1d1b;
-  box-shadow: 0 28px 58px rgba(32, 24, 20, 0.16);
-  color: #f9f5f1;
+.release-badge::before {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--coral);
+  content: "";
 }
 
-.terminal-bar {
-  padding: 14px 17px;
-  border-bottom: 1px solid #393633;
-}
-
-pre {
-  margin: 0;
-  padding: 28px;
-  overflow-x: auto;
+.release-card p {
+  max-width: 480px;
+  margin-bottom: 0;
+  color: var(--muted);
 }
 
 code {
@@ -750,7 +758,7 @@ footer {
 
   .duo,
   .details,
-  .start {
+  .release {
     grid-template-columns: 1fr;
     gap: 55px;
   }
@@ -777,10 +785,6 @@ footer {
     height: 150px;
   }
 
-  .start > .button {
-    grid-column: auto;
-    margin-top: -25px;
-  }
 }
 
 @media (max-width: 660px) {
@@ -885,8 +889,8 @@ footer {
     height: 120px;
   }
 
-  pre {
-    padding: 22px 18px;
+  .release-card {
+    padding: 34px 26px;
   }
 
   footer {

@@ -35,6 +35,7 @@
         <a href="#workflow">How it works</a>
         <a href="#targets">What it cleans</a>
         <a href="#safety">Safety</a>
+        <a href="#get">Availability</a>
       </nav>
       <div class="header-end">
         <nav class="lang-switch" aria-label="Language">
@@ -72,9 +73,9 @@
               rel="noreferrer"
               >View the project on GitHub</a
             >
-            <a class="button button-secondary" href="#start">How to install it</a>
+            <a class="button button-secondary" href="#get">When you can get it</a>
           </div>
-          <p class="hero-meta">macOS 14+ · SwiftUI · MIT License</p>
+          <p class="hero-meta">macOS 14 and later</p>
         </div>
 
         <div class="hero-demo" aria-label="A demonstration of a cleanup run">
@@ -192,7 +193,7 @@
               repository. Plus scanners for stale <em>node_modules</em> trees
               and the installers still sitting in Downloads.
             </p>
-            <code>~/Library/Developer/Xcode/DerivedData</code>
+            <code>11 toolchains · every byte rebuildable</code>
           </article>
           <article>
             <span class="option-symbol" aria-hidden="true">◍</span>
@@ -203,7 +204,7 @@
               the Trash itself — and an app cleanup pane that finds what an
               uninstalled app left behind, matched by bundle ID.
             </p>
-            <code>~/Library/Caches · ~/Library/Logs · ~/.Trash</code>
+            <code>caches · logs · leftovers · the Trash</code>
           </article>
         </div>
       </section>
@@ -220,15 +221,15 @@
           <div>
             <h3>Size estimates</h3>
             <p>
-              Per-task disk usage, computed off the main thread and refreshed
-              after every run so the numbers never go stale.
+              Every target is sized before you touch anything, and measured
+              again after a run, so the numbers never go stale.
             </p>
           </div>
           <div>
             <h3>Per-task details</h3>
             <p>
-              A popover on each row naming the exact paths or commands. No task
-              does anything the popover didn't tell you about.
+              Open the details on any row and it names exactly what that task
+              will touch. Nothing happens that it didn't tell you about first.
             </p>
           </div>
           <div>
@@ -241,8 +242,9 @@
           <div>
             <h3>Restore history</h3>
             <p>
-              Up to twenty batches of original-to-Trash path mappings, restorable
-              in one click while the files are still in the Trash.
+              The last twenty cleanups stay listed, and any of them goes back
+              where it came from in one click while the files are still in the
+              Trash.
             </p>
           </div>
         </div>
@@ -255,39 +257,32 @@
         <div>
           <h2>It moves files to the Trash. It does not delete them.</h2>
           <p>
-            File-based cleanups go through the Trash and record a restore point,
-            so a mistake costs you one click, not an afternoon. Cruft installs no
-            privileged helper — a protected app is reported as a failure rather
-            than escalated around. Targets stay in locations you own, never
-            <code>/Library</code> or <code>/System</code>. Command tasks, emptying
-            the Trash and Docker prune are the exceptions, and the app says so
-            before you run them.
+            File cleanups go through the Trash and leave a restore point, so a
+            mistake costs you one click rather than an afternoon. Cruft never asks
+            for administrator rights — anything it can't move is reported instead
+            of forced. It only ever touches things you own, never the system's own
+            files. Emptying the Trash and the handful of tasks that run a tool
+            directly can't be undone, and the app says so before you run them.
           </p>
         </div>
       </section>
 
-      <section class="start section" id="start">
-        <div>
-          <h2>Build it, then grant it access.</h2>
+      <section class="release section" id="get">
+        <div class="release-copy">
+          <h2>Not out yet.</h2>
           <p>
-            Open source, no installer, no telemetry. Full Disk Access is the one
-            permission it asks for, and it scans nothing until that check passes.
+            No installer, no telemetry, no account. Full Disk Access is the one
+            permission it ever asks for, and it scans nothing until you grant it.
           </p>
         </div>
-        <div class="terminal" aria-label="Install commands">
-          <div class="terminal-bar"><span></span><span></span><span></span></div>
-          <pre><code>git clone https://github.com/dofy/Cruft.git
-cd Cruft
-xcodegen generate
-./Scripts/install-local.sh</code></pre>
+        <div class="release-card">
+          <span class="release-badge">Coming soon</span>
+          <p>
+            A downloadable build is being prepared. Until then the project is
+            public on GitHub, and the issue tracker is the place to tell me what
+            it should clean next.
+          </p>
         </div>
-        <a
-          class="button button-primary"
-          href="https://github.com/dofy/Cruft#build--run"
-          target="_blank"
-          rel="noreferrer"
-          >Read the full install notes</a
-        >
       </section>
     </main>
 
@@ -300,7 +295,6 @@ xcodegen generate
       <div class="footer-links">
         <a href="https://github.com/dofy/Cruft">GitHub</a>
         <a href="https://github.com/dofy/Cruft/issues">Issues</a>
-        <a href="https://github.com/dofy/Cruft/blob/main/LICENSE">MIT License</a>
       </div>
       <p class="copyright">© <span id="year">2026</span> Cruft</p>
     </footer>
