@@ -189,6 +189,37 @@ the toggle stays on and the app still reports no file access. The script signs
 with a self-signed `Cruft Local Development` certificate (created in the login
 keychain on first run), which TCC pins instead, so the grant survives rebuilds.
 
+### Packaging a build for someone else
+
+```bash
+./Scripts/package-release.sh          # → dist/Cruft-<version>.dmg
+```
+
+The script builds Release as a universal binary (both `x86_64` and `arm64`, and
+it fails rather than shipping one slice), signs it, and writes a DMG containing
+the app, an `Applications` symlink and a trilingual first-run note.
+
+Cruft cannot ship on the Mac App Store: it is not sandboxed and it needs Full
+Disk Access. That leaves a Developer ID signature with notarization, or a
+self-signed one. By default the script signs with a self-signed `Cruft
+Distribution` certificate, which means macOS blocks the app on first launch and
+the recipient has to approve it once in System Settings > Privacy & Security —
+the note inside the DMG walks them through it. Back that certificate up and sign
+every later build with it, or macOS stops recognising the builds as the same app
+and everyone has to grant Full Disk Access again.
+
+With a paid Apple Developer account, pass the real identity instead and the
+warning disappears:
+
+```bash
+SIGNING_IDENTITY="Developer ID Application: Name (TEAMID)" \
+  ./Scripts/package-release.sh
+```
+
+That path also enables the hardened runtime and a secure timestamp, which
+notarization requires. Notarization itself (`xcrun notarytool submit` and
+`stapler staple`) is not yet wired up.
+
 ## Project layout
 
 ```
