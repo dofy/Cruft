@@ -90,6 +90,12 @@ codesign --verify --deep --strict --verbose=2 "$built_app"
 
 pkill -x Cruft 2>/dev/null || true
 ditto "$built_app" "$installed_app"
+# ditto preserves the source's timestamps, so the copied bundle keeps whatever
+# mtime the build gave it, and replacing files inside Contents/ does not advance
+# it. IconServices decides whether to re-read an app's icon from that mtime, so
+# a changed icon keeps rendering from the cache; the lsregister below does not
+# dislodge it, only the touch does.
+touch "$installed_app"
 /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister \
     -f -R -trusted "$installed_app"
 
