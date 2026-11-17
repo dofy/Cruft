@@ -8,6 +8,7 @@
 <a href="https://github.com/dofy/Cruft">GitHub</a> · <a href="https://github.com/dofy/Cruft/issues">Issues</a></p>
 
 <p align="center">
+  <img src="https://img.shields.io/badge/Mac-Apple%20Silicon-536b83?style=flat-square" alt="Mac: Apple Silicon" />
   <img src="https://img.shields.io/badge/macOS-14%2B-253a4a?style=flat-square" alt="macOS 14 or later" />
   <img src="https://img.shields.io/badge/UI-SwiftUI-e27650?style=flat-square" alt="SwiftUI" />
   <img src="https://img.shields.io/badge/cleanup-developer%20tools-607d75?style=flat-square" alt="Developer tool cleanup" />

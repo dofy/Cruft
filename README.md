@@ -8,6 +8,7 @@
 <a href="https://github.com/dofy/Cruft">GitHub</a> · <a href="https://github.com/dofy/Cruft/issues">Issues</a></p>
 
 <p align="center">
+  <img src="https://img.shields.io/badge/Mac-Apple%20Silicon-536b83?style=flat-square" alt="Mac: Apple Silicon" />
   <img src="https://img.shields.io/badge/macOS-14%2B-253a4a?style=flat-square" alt="macOS 14 or later" />
   <img src="https://img.shields.io/badge/UI-SwiftUI-e27650?style=flat-square" alt="SwiftUI" />
   <img src="https://img.shields.io/badge/cleanup-developer%20tools-607d75?style=flat-square" alt="Developer tool cleanup" />
@@ -201,8 +202,7 @@ keychain on first run), which TCC pins instead, so the grant survives rebuilds.
 ./Scripts/package-release.sh          # → dist/Cruft-<version>.dmg
 ```
 
-The script builds Release as a universal binary (both `x86_64` and `arm64`, and
-it fails rather than shipping one slice), signs it, and writes a DMG containing
+The script builds Release as an Apple Silicon (`arm64`) binary, signs it, and writes a DMG containing
 the app, an `Applications` symlink and a trilingual first-run note.
 
 Cruft cannot ship on the Mac App Store: it is not sandboxed and it needs Full

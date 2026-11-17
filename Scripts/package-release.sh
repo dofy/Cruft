@@ -6,7 +6,7 @@
 # the Mac App Store. That leaves two options: a Developer ID signature with
 # notarization, or a self-signed one. This script does the second by default and
 # accepts the first through SIGNING_IDENTITY, because the DMG layout, the
-# universal build and the verification steps are the same either way.
+# Apple Silicon build and the verification steps are the same either way.
 #
 # Why a self-signed certificate rather than the ad-hoc identity in project.yml:
 # TCC pins an ad-hoc signature to the binary's cdhash, so Full Disk Access stops
@@ -117,12 +117,9 @@ ensure_signing_identity() {
     )
 }
 
-# ARCHS already resolves to "arm64 x86_64" for the Release configuration, and the
-# build still produces an arm64-only binary, which would leave every Intel Mac
-# unable to open the app. Force both slices and check the result rather than
-# trusting the resolved setting.
-build_universal_app() {
-    log "Building $app_name (Release, universal)"
+# Build and verify an Apple Silicon-only app.
+build_apple_silicon_app() {
+    log "Building $app_name (Release, Apple Silicon)"
     rm -rf "$derived_data"
 
     xcodegen generate
@@ -134,19 +131,17 @@ build_universal_app() {
         -scheme Cruft \
         -configuration Release \
         -derivedDataPath "$derived_data" \
-        ARCHS="x86_64 arm64" \
+        ARCHS="arm64" \
         ONLY_ACTIVE_ARCH=NO \
         CODE_SIGNING_ALLOWED=NO \
         build
 
     local architectures
     architectures="$(lipo -archs "$built_app/Contents/MacOS/Cruft")"
-    for architecture in x86_64 arm64; do
-        if [[ " $architectures " != *" $architecture "* ]]; then
-            echo "error: the binary is missing the $architecture slice (got: $architectures)" >&2
-            exit 1
-        fi
-    done
+    if [[ "$architectures" != "arm64" ]]; then
+        echo "error: expected arm64 only, got: $architectures" >&2
+        exit 1
+    fi
     log "Architectures: $architectures"
 }
 
@@ -258,7 +253,7 @@ main() {
     version="$(read_marketing_version)"
 
     ensure_signing_identity
-    build_universal_app
+    build_apple_silicon_app
     sign_app
 
     local dmg_path
