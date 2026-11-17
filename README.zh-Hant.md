@@ -1,17 +1,23 @@
-# Cruft
+<p align="center"><img src="website/public/app-icon.png" alt="Cruft icon" width="120" /></p>
 
-[English](README.md) · [简体中文](README.zh-Hans.md) · **繁體中文**
+<h1 align="center">Cruft</h1>
 
-[**cruft.phpz.org** ↗](https://cruft.phpz.org)
+<p align="center"><strong>清走累積的雜物，為重要的事騰出空間。</strong></p>
 
-一個小小的原生 **macOS App**，清掉開發機上堆出來的那些 *cruft* —— Xcode DerivedData、
+<p align="center"><a href="README.md">English</a> · <a href="README.zh-Hans.md">简体中文</a> · <strong>繁體中文</strong><br />
+<a href="https://github.com/dofy/Cruft">GitHub</a> · <a href="https://github.com/dofy/Cruft/issues">Issues</a></p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/macOS-14%2B-253a4a?style=flat-square" alt="macOS 14 or later" />
+  <img src="https://img.shields.io/badge/UI-SwiftUI-e27650?style=flat-square" alt="SwiftUI" />
+  <img src="https://img.shields.io/badge/cleanup-developer%20tools-607d75?style=flat-square" alt="Developer tool cleanup" />
+  <img src="https://img.shields.io/badge/restore-history-8a7460?style=flat-square" alt="Restore history" />
+</p>
+
+[Cruft](https://cruft.phpz.org) 是一個小小的原生 **macOS App**，清掉開發機上堆出來的那些 *cruft* —— Xcode DerivedData、
 各工具鏈快取（npm/pnpm/yarn、Cargo、Go、Gradle、Maven、pip、SwiftPM）、系統快取、記錄、
 Homebrew/CocoaPods/gem 殘留，以及垃圾桶 —— 再加兩個掃描器：長期沒動的專案建置產物，以及
 留下來的安裝檔。清單式介面、逐項體積估算，還有一份釋出空間的報告。
-
-![platform](https://img.shields.io/badge/platform-macOS%2014%2B-blue)
-![swift](https://img.shields.io/badge/Swift-5-orange)
-![ui](https://img.shields.io/badge/UI-SwiftUI-green)
 
 ## 它做什麼
 

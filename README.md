@@ -1,19 +1,25 @@
-# Cruft
+<p align="center"><img src="website/public/app-icon.png" alt="Cruft icon" width="120" /></p>
 
-**English** · [简体中文](README.zh-Hans.md) · [繁體中文](README.zh-Hant.md)
+<h1 align="center">Cruft</h1>
 
-[**cruft.phpz.org** ↗](https://cruft.phpz.org)
+<p align="center"><strong>Make room for what matters.</strong></p>
 
-A small native **macOS app** that clears the *cruft* a developer machine piles
+<p align="center"><strong>English</strong> · <a href="README.zh-Hans.md">简体中文</a> · <a href="README.zh-Hant.md">繁體中文</a><br />
+<a href="https://github.com/dofy/Cruft">GitHub</a> · <a href="https://github.com/dofy/Cruft/issues">Issues</a></p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/macOS-14%2B-253a4a?style=flat-square" alt="macOS 14 or later" />
+  <img src="https://img.shields.io/badge/UI-SwiftUI-e27650?style=flat-square" alt="SwiftUI" />
+  <img src="https://img.shields.io/badge/cleanup-developer%20tools-607d75?style=flat-square" alt="Developer tool cleanup" />
+  <img src="https://img.shields.io/badge/restore-history-8a7460?style=flat-square" alt="Restore history" />
+</p>
+
+[Cruft](https://cruft.phpz.org) is a small native **macOS app** that clears the *cruft* a developer machine piles
 up — Xcode DerivedData, toolchain caches (npm/pnpm/yarn, Cargo, Go, Gradle,
 Maven, pip, SwiftPM), system caches, logs, Homebrew/CocoaPods/gem leftovers, and
 the Trash — plus scanners for stale project build artifacts and leftover
 installers. Checklist UI, per-task size estimates, and a report of the space
 reclaimed.
-
-![platform](https://img.shields.io/badge/platform-macOS%2014%2B-blue)
-![swift](https://img.shields.io/badge/Swift-5-orange)
-![ui](https://img.shields.io/badge/UI-SwiftUI-green)
 
 ## What it does
 
