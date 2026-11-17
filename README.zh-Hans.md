@@ -1,4 +1,4 @@
-<p align="center"><img src="website/public/app-icon.png" alt="Cruft icon" width="120" /></p>
+<p align="center"><img src="Sources/Assets.xcassets/AppIcon.appiconset/icon_256.png" alt="Cruft icon" width="120" /></p>
 
 <h1 align="center">Cruft</h1>
 
@@ -15,7 +15,7 @@
   <img src="https://img.shields.io/badge/restore-history-8a7460?style=flat-square" alt="Restore history" />
 </p>
 
-[Cruft](https://cruft.phpz.org) 是一个小小的原生 **macOS 应用**，清掉开发机上堆出来的那些 *cruft*——Xcode DerivedData、
+[Cruft](https://cruft.phpz.org/zh-Hans/) 是一个小小的原生 **macOS 应用**，清掉开发机上堆出来的那些 *cruft*——Xcode DerivedData、
 各工具链缓存（npm/pnpm/yarn、Cargo、Go、Gradle、Maven、pip、SwiftPM）、系统缓存、日志、
 Homebrew/CocoaPods/gem 残留，以及废纸篓——外加两个扫描器：长期未动的项目构建产物，和
 遗留的安装包。清单式界面、逐项体积估算、以及一份释放空间的报告。
@@ -189,7 +189,6 @@ Sources/
 └── Assets.xcassets/        # 应用图标
 Tests/CruftTests.swift      # 匹配、路径守卫与恢复测试
 Scripts/check-localization.sh  # 字符串目录门禁（CI 也跑）
-website/                    # cruft.phpz.org —— 三语 Vite 站点，部署在 Cloudflare
 project.yml                 # xcodegen 规格
 ```
 
